@@ -9,23 +9,130 @@ html
 
 :root
 {
-	/* Use for background color of navigation, header, footer */
-	--primary-color-dark: #0084AC;
-	--primary-color-mid: #51B2BB;
-	--primary-color-light: #9BECC1;
+	/* Use for background color of navigation, header, footer, and other boxes */
+	--primary-color-dark: #008B00;
+	--primary-color-mid: #00BE00;
+	--primary-color-light: #BBE1BB;
 
 	/* Use for background (table row alt 1)*/
-	--analog-color-a-dark: #008B00;
-	--analog-color-a-mid: #00BE00;
-	--analog-color-a-light: #4CFF4C;
+	--analog-color-a-dark: #538000;
+	--analog-color-a-mid: #73AF00;
+	--analog-color-a-light: #C9DCBB;
 
 	/* Use for background (table row alt 2)*/
-	--analog-color-b-dark: #007DEB;
-	--analog-color-b-mid: #71A4FF;
-	--analog-color-b-light: #C8D8FF;
+	--analog-color-b-dark: #0084AC;
+	--analog-color-b-mid: #51B2BB;
+	--analog-color-b-light: #C2DDE0;
 
 	/* Use for link colors and certain highlights*/
-	--complement-color-dark: #C8D8FF;
-	--complement-color-mid: #FF2626;
-	--complement-color-light: #FFBDBD;
+	--complement-color-dark: #B01CBB;
+	--complement-color-mid: #DF60BD;
+	--complement-color-light: #EFC5E1;
+}
+
+html {
+    /* 2. Core Theme & Page Colors (Light Mode) */
+    --primary-color: var(--primary-color-mid);
+    --primary-dark-color: var(--primary-color-dark);
+    --primary-light-color: var(--primary-color-light);
+
+    --page-background-color: #ffffff;
+    --page-foreground-color: #2b2b2b;
+    --page-secondary-foreground-color: #555555;
+
+    /* Navigation, Header, Footer & Sidebar */
+    --nav-background-color: var(--primary-color-light);
+    --nav-foreground-color: var(--primary-color-dark);
+    --side-nav-background: #f4f8f4;
+
+    /* Code Blocks & Fragments */
+    --fragment-background: #f6f8f6;
+    --fragment-foreground: #2b2b2b;
+
+    /* Links & Highlights */
+    --link-color: var(--complement-color-dark);
+
+    /* Tables */
+    --table-row-background-even: var(--analog-color-a-light);
+    --table-row-background-odd: var(--analog-color-b-light);
+
+    /* Search Bar & Inputs */
+    --search-box-background: #ffffff;
+    --search-box-border-color: var(--primary-color-mid);
+    --search-box-focus-border-color: var(--complement-color-mid);
+
+    /* Admonitions (Notes, Warnings, Tips) */
+    --theme-opt-in-background: var(--analog-color-b-light);
+}
+
+/* 3. Automatic System Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    html:not(.light-mode) {
+        --primary-color: var(--primary-color-mid);
+        --primary-dark-color: var(--primary-color-light);
+        --primary-light-color: var(--primary-color-dark);
+
+        --page-background-color: #121612;
+        --page-foreground-color: #e0e6e0;
+        --page-secondary-foreground-color: #a0a8a0;
+
+        /* Navigation, Header, Footer & Sidebar in Dark Mode */
+        --nav-background-color: var(--primary-color-dark);
+        --nav-foreground-color: var(--primary-color-light);
+        --side-nav-background: #171f17;
+
+        /* Code Blocks & Fragments in Dark Mode */
+        --fragment-background: #1a221a;
+        --fragment-foreground: #d0d8d0;
+
+        /* Links & Highlights in Dark Mode */
+        --link-color: var(--complement-color-light);
+
+        /* Tables in Dark Mode */
+        --table-row-background-even: var(--analog-color-a-dark);
+        --table-row-background-odd: var(--analog-color-b-dark);
+
+        /* Search Bar & Inputs in Dark Mode */
+        --search-box-background: #1a221a;
+        --search-box-border-color: var(--primary-color-dark);
+        --search-box-focus-border-color: var(--complement-color-mid);
+
+        /* Admonitions in Dark Mode */
+        --theme-opt-in-background: #0d232a;
+    }
+}
+
+/* 4. Manual Doxygen-Awesome Dark Mode Toggle Support */
+html.dark-mode {
+    --primary-color: var(--primary-color-mid);
+    --primary-dark-color: var(--primary-color-light);
+    --primary-light-color: var(--primary-color-dark);
+
+    --page-background-color: #121612;
+    --page-foreground-color: #e0e6e0;
+    --page-secondary-foreground-color: #a0a8a0;
+
+    /* Navigation, Header, Footer & Sidebar in Dark Mode */
+    --nav-background-color: var(--primary-color-dark);
+    --nav-foreground-color: var(--primary-color-light);
+    --side-nav-background: #171f17;
+
+    /* Code Blocks & Fragments in Dark Mode */
+    --fragment-background: #1a221a;
+    --fragment-foreground: #d0d8d0;
+
+    /* Links & Highlights in Dark Mode */
+    --link-color: var(--complement-color-light);
+
+    /* Tables in Dark Mode */
+    --table-row-background-even: var(--analog-color-a-dark);
+    --table-row-background-odd: var(--analog-color-b-dark);
+
+    /* Search Bar & Inputs in Dark Mode */
+    --search-box-background: #1a221a;
+    --search-box-border-color: var(--primary-color-dark);
+    --search-box-focus-border-color: var(--complement-color-mid);
+
+    /* Admonitions in Dark Mode */
+    --theme-opt-in-background: #0d232a;
 }
