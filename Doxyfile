@@ -9,13 +9,13 @@
 DOXYFILE_ENCODING      = UTF-8
 
 
-PROJECT_NAME           = Jopp
+PROJECT_NAME           = SON
 
 
 PROJECT_NUMBER         =
 
 
-PROJECT_BRIEF          = "A JSON parsing library"
+PROJECT_BRIEF          = "Structured Object Notation"
 
 
 PROJECT_LOGO           =

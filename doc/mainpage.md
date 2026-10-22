@@ -1,8 +1,8 @@
-# Jopp
+# SON
 
 ## The file format
 
-A Jopp document stores values of different types
+A SON document stores values of different types
 
 * Numeric tuple
 * String
@@ -96,7 +96,7 @@ It is an error if the size category is different from the number of bytes before
 
 ## Compoent diagram
 
-\startuml "Jopp components"
+\startuml "libson components"
 package common_traits
 package template_param_pack
 \enduml
