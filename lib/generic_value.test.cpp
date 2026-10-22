@@ -96,7 +96,7 @@ TESTCASE(son_explain_lookup_error_code)
 			// NOLINTNEXTLINE
 			explain(static_cast<son::lookup_error_code>(234));
 		},
-		"jopp internal error: lib/./generic_value.hpp:39: Invalid lookup error code\n",
+		"son internal error: lib/./generic_value.hpp:31: Invalid lookup error code\n",
 		SIGABRT
 	);
 }
@@ -132,7 +132,7 @@ TESTCASE(son_lookup_result_from_pointer)
 		[result]{
 			std::ignore = result.error_code();
 		},
-		"jopp internal error: lib/./generic_value.hpp:74: Error code not set in a non-error condition\n",
+		"son internal error: lib/./generic_value.hpp:66: Error code not set in a non-error condition\n",
 		SIGABRT
 	);
 }

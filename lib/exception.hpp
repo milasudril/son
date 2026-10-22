@@ -26,7 +26,7 @@ namespace son
 #endif
 
 	/**
-	 * \brief Class used for exception raised by jopp
+	 * \brief Class used for exception raised by son
 	 */
 	class exception:public std::exception
 	{
@@ -44,7 +44,7 @@ namespace son
 	};
 
 	/**
-	 * \brief Function called when an unrecoverable error is detected within jopp
+	 * \brief Function called when an unrecoverable error is detected within son
 	 */
 	template<class... Args>
 	[[noreturn]] [[gnu::cold]] void raise_internal_error(
@@ -62,7 +62,7 @@ namespace son
 
 		std::print(
 			stderr,
-			"jopp internal error: {}:{}: {}\n",
+			"son internal error: {}:{}: {}\n",
 			loc.file_name(),
 			loc.line(),
 			std::move(msg)

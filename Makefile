@@ -37,5 +37,5 @@ clean:
 DESTDIR?=""
 PREFIX?="/usr"
 install:
-	mkdir -p $(DESTDIR)$(PREFIX)/include/jopp
-	find -name '*.hpp' -exec cp \{\} $(DESTDIR)$(PREFIX)/include/jopp \;
+	mkdir -p $(DESTDIR)$(PREFIX)/include/son
+	find -name '*.hpp' -exec cp \{\} $(DESTDIR)$(PREFIX)/include/son \;

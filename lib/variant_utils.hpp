@@ -299,5 +299,9 @@ namespace son
 			std::forward<VariantType>(to_visit)
 		);
 	}
+
+	template<class ... Ts>
+	struct overload : Ts ...
+	{ using Ts::operator() ...; };
 }
 #endif

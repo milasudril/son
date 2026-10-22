@@ -2,11 +2,9 @@
 #define JOPP_GENERIC_VALUE_HPP
 
 #include "./variant_utils.hpp"
-#include "./utils.hpp"
 #include "./template_param_pack.hpp"
 #include "./clear_nodes_visitor.hpp"
 #include "./exception.hpp"
-#include "./sequence_container.hpp"
 #include "./node_visitor_adaptor.hpp"
 #include "./with_subtype_id.hpp"
 #include "./clone_visitor.hpp"
@@ -16,12 +14,6 @@
 
 namespace son
 {
-	using jopp::overload;
-
-	struct src_object{};
-
-	struct src_value{};
-
 	enum class lookup_error_code{value_not_an_object, key_not_found, unexpected_type};
 
 	constexpr std::string_view explain(lookup_error_code ec)

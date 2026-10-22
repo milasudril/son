@@ -19,7 +19,7 @@ TESTCASE(son_raise_internal_error)
 		[]{
 			son::raise_internal_error("Something went wrong {} {}", son::make_fmt_args(1, "Foobar"));
 		},
-		"jopp internal error: lib/exception.test.cpp:20: Something went wrong 1 Foobar\n",
+		"son internal error: lib/exception.test.cpp:20: Something went wrong 1 Foobar\n",
 		SIGABRT
 	);
 }
