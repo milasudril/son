@@ -3,7 +3,7 @@
 
 #include <utility>
 
-namespace jopp2
+namespace son
 {
 	template<class SubtypeIdType, class Base>
 	class with_subtype_id:public Base

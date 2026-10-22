@@ -7,7 +7,7 @@
 #include "./sequence_container.hpp"
 #include "./node_visitor_adaptor.hpp"
 
-namespace jopp2
+namespace son
 {
 	template<class GenericValueIn, class GenericValueOut>
 	class clone_visitor
@@ -86,7 +86,7 @@ namespace jopp2
 		}
 
 		template<class T>
-		node_visitor_status handle_key(jopp2::container_proxy<T>& key, value_visitation_context const& /*unused*/)
+		node_visitor_status handle_key(son::container_proxy<T>& key, value_visitation_context const& /*unused*/)
 		{
 			if(m_contexts.empty())
 			{ raise_internal_error("No contexts"); }
@@ -122,8 +122,8 @@ namespace jopp2
 		 */
 		template<class T>
 		node_visitor_status handle_subtype_id(
-			jopp2::container_proxy<T>& id,
-			jopp2::value_visitation_context const& /*unused*/
+			son::container_proxy<T>& id,
+			son::value_visitation_context const& /*unused*/
 		)
 		{
 			m_current_subtype_id = typename objcontainer_out::subtype_id_type{

@@ -3,7 +3,7 @@
 
 #include <concepts>
 
-namespace jopp2
+namespace son
 {
 	template<class T>
 	concept sequence_container = requires(T& obj){

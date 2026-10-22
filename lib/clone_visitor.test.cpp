@@ -13,14 +13,14 @@ namespace
 {
 	struct test_generic_value_in
 	{
-		using leaf_value_template_param_pack = jopp2::template_param_pack<
+		using leaf_value_template_param_pack = son::template_param_pack<
 			int,
 			std::string
 		>;
 
 		using key_type = std::variant<int, std::string>;
 
-		using object = jopp2::with_subtype_id<
+		using object = son::with_subtype_id<
 			std::string,
 			std::map<key_type, test_generic_value_in>
 		>;
@@ -41,7 +41,7 @@ namespace
 
 	struct test_generic_value_out
 	{
-		using object = jopp2::with_subtype_id<
+		using object = son::with_subtype_id<
 			std::string,
 			std::map<std::variant<int, std::string>, test_generic_value_out>
 		>;
@@ -56,7 +56,7 @@ namespace
 			{ leaf_value_type{std::forward<T>(x)} };
 		};
 
-		using value_template_param_pack_type = jopp2::template_param_pack<
+		using value_template_param_pack_type = son::template_param_pack<
 			int,
 			std::string,
 			std::vector<int>,
@@ -65,7 +65,7 @@ namespace
 			object
 		>;
 
-		using value_type = jopp2::map_template_param_pack_to_type_t<
+		using value_type = son::map_template_param_pack_to_type_t<
 			std::variant,
 			value_template_param_pack_type
 		>;
@@ -91,10 +91,10 @@ namespace
 	};
 }
 
-TESTCASE(jopp2_clone_visitor_initial_state)
+TESTCASE(son_clone_visitor_initial_state)
 {
 	test_generic_value_out output{"This is a test"};
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	EXPECT_EQ(*output.get_if<int>(), 0);
@@ -106,33 +106,33 @@ TESTCASE(jopp2_clone_visitor_initial_state)
 	EXPECT_EQ(current_ctxt.output_value.is_bound_to(output), true);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_leaf_value_no_current_key)
+TESTCASE(son_clone_visitor_handle_leaf_value_no_current_key)
 {
 	test_generic_value_out output{"Hello, World"};
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	auto const& context_before = visitor.contexts().back();
 	EXPECT_EQ(*output.get_if<int>(), 0);
-	auto const res = visitor.handle_leaf_value(1234, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_leaf_value(1234, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(*output.get_if<int>(), 1234);
 	auto const& context_after = visitor.contexts().back();
 	EXPECT_EQ(&context_before, &context_after);
 	EXPECT_EQ(visitor.value_after_key(), nullptr);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_simple_array_no_current_key)
+TESTCASE(son_clone_visitor_handle_simple_array_no_current_key)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	std::vector vals{1, 2, 3};
-	jopp2::container_proxy val_proxy{std::cref(vals)};
+	son::container_proxy val_proxy{std::cref(vals)};
 	auto const& context_before = visitor.contexts().back();
-	auto const res = visitor.handle_simple_array(val_proxy, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_simple_array(val_proxy, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(val_proxy.at_end(), true);
 	auto const& saved_v = *output.get_if<std::vector<int>>();
 	EXPECT_EQ(saved_v, vals);
@@ -143,10 +143,10 @@ TESTCASE(jopp2_clone_visitor_handle_simple_array_no_current_key)
 	EXPECT_EQ(visitor.value_after_key(), nullptr);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_begin_of_container_sequence_no_current_key)
+TESTCASE(son_clone_visitor_handle_begin_of_container_sequence_no_current_key)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	std::vector vals{
@@ -155,10 +155,10 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_sequence_no_current_key)
 		test_generic_value_in{3}
 	};
 
-	jopp2::container_proxy container{std::cref(vals)};
+	son::container_proxy container{std::cref(vals)};
 	auto const& context_before = visitor.contexts().back();
-	auto const res = visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_begin_of_container(container, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(container.at_begin(), true);
 	auto const& saved_v = *output.get_if<std::vector<test_generic_value_out>>();
 	EXPECT_EQ(saved_v.empty(), true);
@@ -174,10 +174,10 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_sequence_no_current_key)
 	);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_begin_of_container_object_no_current_key)
+TESTCASE(son_clone_visitor_handle_begin_of_container_object_no_current_key)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	test_generic_value_in::object obj{
@@ -187,14 +187,14 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_object_no_current_key)
 	};
 
 	std::string subtype_id{"my_type"};
-	jopp2::container_proxy subtype_id_ref{std::cref(subtype_id)};
-	visitor.handle_subtype_id(subtype_id_ref, jopp2::value_visitation_context{});
+	son::container_proxy subtype_id_ref{std::cref(subtype_id)};
+	visitor.handle_subtype_id(subtype_id_ref, son::value_visitation_context{});
 	EXPECT_EQ(subtype_id_ref.at_end(), true);
 
-	jopp2::container_proxy container{std::cref(obj)};
+	son::container_proxy container{std::cref(obj)};
 	auto const& context_before = visitor.contexts().back();
-	auto const res = visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_begin_of_container(container, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(container.at_begin(), true);
 	auto const& saved_v = *output.get_if<test_generic_value_out::object>();
 	EXPECT_EQ(saved_v.subtype_id(), subtype_id);
@@ -216,24 +216,24 @@ namespace
 	void set_current_key(Visitor& visitor, Key&& key)
 	{
 		test_generic_value_in::object obj;
-		jopp2::container_proxy container{std::cref(obj)};
-		visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
+		son::container_proxy container{std::cref(obj)};
+		visitor.handle_begin_of_container(container, son::value_visitation_context{});
 		visitor.handle_key(
 			std::forward<Key>(key),
-			jopp2::value_visitation_context{}
+			son::value_visitation_context{}
 		);
 	}
 }
 
-TESTCASE(jopp2_clone_visitor_handle_leaf_value_with_current_key)
+TESTCASE(son_clone_visitor_handle_leaf_value_with_current_key)
 {
 	test_generic_value_out value_out;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{value_out};
 	set_current_key(visitor, std::string{"Hello, world"});
 
-	auto const res = visitor.handle_leaf_value(132, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_leaf_value(132, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 
 	auto const& context_before = visitor.contexts().back();
 	EXPECT_EQ(visitor.contexts().size(), 2);
@@ -247,18 +247,18 @@ TESTCASE(jopp2_clone_visitor_handle_leaf_value_with_current_key)
 }
 
 
-TESTCASE(jopp2_clone_visitor_handle_simple_array_with_current_key)
+TESTCASE(son_clone_visitor_handle_simple_array_with_current_key)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 	set_current_key(visitor, std::string{"Hello, world"});
 
 	std::vector vals{1, 2, 3};
-	jopp2::container_proxy val_proxy{std::cref(vals)};
+	son::container_proxy val_proxy{std::cref(vals)};
 	auto const& context_before = visitor.contexts().back();
-	auto const res = visitor.handle_simple_array(val_proxy, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_simple_array(val_proxy, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(val_proxy.at_end(), true);
 
 	auto const object = output.get_if<test_generic_value_out::object>();
@@ -272,10 +272,10 @@ TESTCASE(jopp2_clone_visitor_handle_simple_array_with_current_key)
 	EXPECT_EQ(visitor.value_after_key(), nullptr);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_begin_of_container_sequence_with_current_key)
+TESTCASE(son_clone_visitor_handle_begin_of_container_sequence_with_current_key)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 	set_current_key(visitor, std::string{"Hello, world"});
 
@@ -285,10 +285,10 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_sequence_with_current_key
 		test_generic_value_in{3}
 	};
 
-	jopp2::container_proxy container{std::cref(vals)};
+	son::container_proxy container{std::cref(vals)};
 	auto const& context_before = visitor.contexts().back();
-	auto const res = visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_begin_of_container(container, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(container.at_begin(), true);
 
 	auto const object = output.get_if<test_generic_value_out::object>();
@@ -307,10 +307,10 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_sequence_with_current_key
 	EXPECT_EQ(*saved_v.at(0).get_if<int>(), 1);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_begin_of_container_object_with_current_key)
+TESTCASE(son_clone_visitor_handle_begin_of_container_object_with_current_key)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 	set_current_key(visitor, std::string{"Hello, world"});
 
@@ -321,14 +321,14 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_object_with_current_key)
 	};
 
 	std::string subtype_id{"my_type"};
-	jopp2::container_proxy subtype_id_ref{std::cref(subtype_id)};
-	visitor.handle_subtype_id(subtype_id_ref, jopp2::value_visitation_context{});
+	son::container_proxy subtype_id_ref{std::cref(subtype_id)};
+	visitor.handle_subtype_id(subtype_id_ref, son::value_visitation_context{});
 	EXPECT_EQ(subtype_id_ref.at_end(), true);
 
-	jopp2::container_proxy container{std::cref(obj)};
+	son::container_proxy container{std::cref(obj)};
 	auto const& context_before = visitor.contexts().back();
-	auto const res = visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_begin_of_container(container, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(container.at_begin(), true);
 
 	auto const object = output.get_if<test_generic_value_out::object>();
@@ -347,20 +347,20 @@ TESTCASE(jopp2_clone_visitor_handle_begin_of_container_object_with_current_key)
 	);
 }
 
-TESTCASE(jopp2_clone_visitor_handle_key_in_container)
+TESTCASE(son_clone_visitor_handle_key_in_container)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	test_generic_value_in::object obj;
-	jopp2::container_proxy container{std::cref(obj)};
-	visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
+	son::container_proxy container{std::cref(obj)};
+	visitor.handle_begin_of_container(container, son::value_visitation_context{});
 
 	std::string the_key{"Hello, world"};
-	jopp2::container_proxy wrapped_key{std::cref(the_key)};
-	auto const res = visitor.handle_key(wrapped_key, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	son::container_proxy wrapped_key{std::cref(the_key)};
+	auto const res = visitor.handle_key(wrapped_key, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	EXPECT_EQ(wrapped_key.at_end(), true);
 	auto& inserted_item = output.get_if<test_generic_value_out::object>()->at("Hello, world");
 	EXPECT_EQ(visitor.value_after_key(), &inserted_item);
@@ -368,53 +368,53 @@ TESTCASE(jopp2_clone_visitor_handle_key_in_container)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfree-nonheap-object"
-TESTCASE(jopp2_clone_visitor_handle_key_no_container)
+TESTCASE(son_clone_visitor_handle_key_no_container)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	test_generic_value_in::object obj;
-	jopp2::container_proxy container{std::cref(obj)};
-	visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
+	son::container_proxy container{std::cref(obj)};
+	visitor.handle_begin_of_container(container, son::value_visitation_context{});
 
-	auto const res = visitor.handle_key(55, jopp2::value_visitation_context{});
-	EXPECT_EQ(res, jopp2::node_visitor_status::ready);
+	auto const res = visitor.handle_key(55, son::value_visitation_context{});
+	EXPECT_EQ(res, son::node_visitor_status::ready);
 	auto& inserted_item = output.get_if<test_generic_value_out::object>()->at(55);
 	EXPECT_EQ(visitor.value_after_key(), &inserted_item);
 }
 #pragma GCC diagnostic pop
 
-TESTCASE(jopp2_clone_visitor_handle_array_of_strings)
+TESTCASE(son_clone_visitor_handle_array_of_strings)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	std::vector<std::string> strings{
 		"Alpha_7932", "bRaVo!#48", "Charlie-99x"
 	};
-	jopp2::container_proxy container{std::cref(strings)};
-	visitor.handle_begin_of_container(container, jopp2::value_visitation_context{});
+	son::container_proxy container{std::cref(strings)};
+	visitor.handle_begin_of_container(container, son::value_visitation_context{});
 
-	jopp2::container_proxy inner{std::cref(strings.front())};
-	auto const result = visitor.handle_simple_array(inner, jopp2::value_visitation_context{});
-	EXPECT_EQ(result, jopp2::node_visitor_status::ready);
+	son::container_proxy inner{std::cref(strings.front())};
+	auto const result = visitor.handle_simple_array(inner, son::value_visitation_context{});
+	EXPECT_EQ(result, son::node_visitor_status::ready);
 
 	auto const val = output.get_if<std::vector<std::string>>();
 	REQUIRE_NE(val, nullptr);
 	EXPECT_EQ(val->at(0), "Alpha_7932");
 }
 
-TESTCASE(jopp2_clone_visitor_handle_end_of_container)
+TESTCASE(son_clone_visitor_handle_end_of_container)
 {
 	test_generic_value_out output;
-	using visitor_type = jopp2::clone_visitor<test_generic_value_in, test_generic_value_out>;
+	using visitor_type = son::clone_visitor<test_generic_value_in, test_generic_value_out>;
 	visitor_type visitor{output};
 
 	EXPECT_EQ(visitor.contexts().empty(), false);
 	test_generic_value_in::object obj;
-	jopp2::container_proxy container{std::cref(obj)};
-	visitor.handle_end_of_container(container, jopp2::value_visitation_context{});
+	son::container_proxy container{std::cref(obj)};
+	visitor.handle_end_of_container(container, son::value_visitation_context{});
 	EXPECT_EQ(visitor.contexts().empty(), true);
 }

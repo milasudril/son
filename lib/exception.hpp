@@ -12,7 +12,7 @@ extern "C"
 }
 #endif
 
-namespace jopp2
+namespace son
 {
 #ifdef COVERAGE_BUILD
 	inline void flush_errstream(FILE* stream)

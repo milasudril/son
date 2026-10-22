@@ -11,7 +11,7 @@
 #include <vector>
 #include <format>
 
-namespace jopp2
+namespace son
 {
 	struct value_visitation_context
 	{
@@ -591,7 +591,7 @@ namespace jopp2
 		}
 
 		auto visit_nodes()
-		{ return jopp2::visit_nodes(m_nodes, m_visitor); }
+		{ return son::visit_nodes(m_nodes, m_visitor); }
 
 	private:
 		using adaptor = node_visitor_adaptor<GenericValue&, NodeVisitor>;

@@ -5,7 +5,7 @@
 #include <ranges>
 #include <type_traits>
 
-namespace jopp2
+namespace son
 {
 	template<class Range>
 	struct selected_iterator

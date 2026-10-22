@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace jopp2
+namespace son
 {
 	using jopp::overload;
 

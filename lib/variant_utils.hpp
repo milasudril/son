@@ -8,7 +8,7 @@
 #include <variant>
 #include <array>
 
-namespace jopp2
+namespace son
 {
 	template<class T>
 	struct variant_element_tag

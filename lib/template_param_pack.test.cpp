@@ -5,51 +5,51 @@
 #include <variant>
 #include <testfwk/testfwk.hpp>
 
-TESTCASE(jopp2_map_template_param_pack_to_type)
+TESTCASE(son_map_template_param_pack_to_type)
 {
-	using my_pack = jopp2::template_param_pack<int, double>;
+	using my_pack = son::template_param_pack<int, double>;
 
 	static_assert(
 		std::is_same_v<
-			jopp2::map_template_param_pack_to_type_t<std::variant, my_pack>,
+			son::map_template_param_pack_to_type_t<std::variant, my_pack>,
 			std::variant<int, double>
 		>
 	);
 }
 
-TESTCASE(jopp2_wrap_in_template_param_pack)
+TESTCASE(son_wrap_in_template_param_pack)
 {
-	using my_pack = jopp2::template_param_pack<int, double>;
+	using my_pack = son::template_param_pack<int, double>;
 
-	static_assert(std::is_same_v<jopp2::wrap_in_template_param_pack_t<my_pack>, my_pack>);
-	static_assert(std::is_same_v<jopp2::wrap_in_template_param_pack_t<int>, jopp2::template_param_pack<int>>);
+	static_assert(std::is_same_v<son::wrap_in_template_param_pack_t<my_pack>, my_pack>);
+	static_assert(std::is_same_v<son::wrap_in_template_param_pack_t<int>, son::template_param_pack<int>>);
 }
 
-TESTCASE(jopp2_append_to_template_param_pack)
+TESTCASE(son_append_to_template_param_pack)
 {
-	using my_pack = jopp2::template_param_pack<int, double>;
+	using my_pack = son::template_param_pack<int, double>;
 
-	using appended_pack = jopp2::append_to_template_param_pack_t<my_pack, char>;
+	using appended_pack = son::append_to_template_param_pack_t<my_pack, char>;
 
 	static_assert(
 		std::is_same_v<
 			appended_pack,
-			jopp2::template_param_pack<int, double, char>
+			son::template_param_pack<int, double, char>
 		>
 	);
 }
 
-TESTCASE(jopp2_concatenate_template_param_pack)
+TESTCASE(son_concatenate_template_param_pack)
 {
-	using pack_a = jopp2::template_param_pack<float, double>;
-	using pack_b = jopp2::template_param_pack<int, long long>;
+	using pack_a = son::template_param_pack<float, double>;
+	using pack_b = son::template_param_pack<int, long long>;
 
-	using total_pack = jopp2::concatenate_template_param_packs_t<pack_a, pack_b>;
+	using total_pack = son::concatenate_template_param_packs_t<pack_a, pack_b>;
 
 	static_assert(
 		std::is_same_v<
 			total_pack,
-			jopp2::template_param_pack<float, double, int ,long long>
+			son::template_param_pack<float, double, int ,long long>
 		>
 	);
 }
@@ -64,10 +64,10 @@ namespace
 	{};
 }
 
-TESTCASE(jopp2_wrap_template_param_pack_elements)
+TESTCASE(son_wrap_template_param_pack_elements)
 {
-	using my_pack = jopp2::template_param_pack<float, double>;
-	using my_new_pack = jopp2::wrap_template_param_pack_elements_t<
+	using my_pack = son::template_param_pack<float, double>;
+	using my_new_pack = son::wrap_template_param_pack_elements_t<
 		my_pack,
 		type_with_extra_arg,
 		test_type
@@ -76,7 +76,7 @@ TESTCASE(jopp2_wrap_template_param_pack_elements)
 	static_assert(
 		std::is_same_v<
 			my_new_pack,
-			jopp2::template_param_pack<
+			son::template_param_pack<
 				type_with_extra_arg<float, test_type>,
 				type_with_extra_arg<double, test_type>
 			>

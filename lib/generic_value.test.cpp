@@ -19,7 +19,7 @@ namespace
 	struct my_value_traits_with_pack
 	{
 		using key_type = std::string;
-		using leaf_value_type = jopp2::template_param_pack<int, double, std::string, char>;
+		using leaf_value_type = son::template_param_pack<int, double, std::string, char>;
 
 		template<class Key, class Value>
 		using map_type = std::flat_map<Key, Value>;
@@ -52,7 +52,7 @@ namespace
 	struct json_value_traits
 	{
 		using key_type = std::string;
-		using leaf_value_type = jopp2::template_param_pack<std::monostate, bool_wrapper, double, std::string>;
+		using leaf_value_type = son::template_param_pack<std::monostate, bool_wrapper, double, std::string>;
 		using subtype_id_type = std::string;
 		template<class Key, class Value>
 		using map_type = std::unordered_map<Key, Value>;
@@ -64,7 +64,7 @@ namespace
 	struct json_value_traits_sorted
 	{
 		using key_type = std::string;
-		using leaf_value_type = jopp2::template_param_pack<std::monostate, bool_wrapper, double, std::string>;
+		using leaf_value_type = son::template_param_pack<std::monostate, bool_wrapper, double, std::string>;
 		using subtype_id_type = std::string;
 		template<class Key, class Value>
 		using map_type = std::flat_map<Key, Value>;
@@ -74,37 +74,37 @@ namespace
 	};
 }
 
-TESTCASE(jopp2_explain_lookup_error_code)
+TESTCASE(son_explain_lookup_error_code)
 {
 	EXPECT_EQ(
-		explain(jopp2::lookup_error_code::unexpected_type),
+		explain(son::lookup_error_code::unexpected_type),
 		"Item exists but has a different type"
 	);
 
 	EXPECT_EQ(
-		explain(jopp2::lookup_error_code::key_not_found),
+		explain(son::lookup_error_code::key_not_found),
 		"Key not found"
 	);
 
 	EXPECT_EQ(
-		explain(jopp2::lookup_error_code::value_not_an_object),
+		explain(son::lookup_error_code::value_not_an_object),
 		"Value is not an object"
 	);
 
 	TestFwk::expect_death(
 		[]{
 			// NOLINTNEXTLINE
-			explain(static_cast<jopp2::lookup_error_code>(234));
+			explain(static_cast<son::lookup_error_code>(234));
 		},
 		"jopp internal error: lib/./generic_value.hpp:39: Invalid lookup error code\n",
 		SIGABRT
 	);
 }
 
-TESTCASE(jopp2_lookup_result_from_error_code)
+TESTCASE(son_lookup_result_from_error_code)
 {
-	jopp2::lookup_result<int> foo{jopp2::lookup_error_code::key_not_found};
-	EXPECT_EQ(foo.error_code(), jopp2::lookup_error_code::key_not_found);
+	son::lookup_result<int> foo{son::lookup_error_code::key_not_found};
+	EXPECT_EQ(foo.error_code(), son::lookup_error_code::key_not_found);
 	TestFwk::expect_death([foo]{*foo = 123;},"" , SIGSEGV);
 	try
 	{
@@ -120,10 +120,10 @@ TESTCASE(jopp2_lookup_result_from_error_code)
 	}
 }
 
-TESTCASE(jopp2_lookup_result_from_pointer)
+TESTCASE(son_lookup_result_from_pointer)
 {
 	std::pair res_value{235, 35};
-	jopp2::lookup_result result{&res_value};
+	son::lookup_result result{&res_value};
 	EXPECT_EQ(*result, res_value);
 	EXPECT_EQ(result->first, 235);
 	EXPECT_EQ(result->second, 35);
@@ -137,9 +137,9 @@ TESTCASE(jopp2_lookup_result_from_pointer)
 	);
 }
 
-TESTCASE(jopp2_generic_value_static_properties)
+TESTCASE(son_generic_value_static_properties)
 {
-	using type_with_pack = jopp2::generic_value<my_value_traits_with_pack>;
+	using type_with_pack = son::generic_value<my_value_traits_with_pack>;
 	EXPECT_EQ(
 		(std::is_same_v<
 			type_with_pack::value_type,
@@ -167,7 +167,7 @@ TESTCASE(jopp2_generic_value_static_properties)
 	EXPECT_EQ((std::is_constructible_v<type_with_pack, int>), true);
 	EXPECT_EQ((std::is_constructible_v<type_with_pack, type_with_pack::value_type>), true);
 
-	using type_with_no_pack = jopp2::generic_value<my_value_traits_with_no_pack>;
+	using type_with_no_pack = son::generic_value<my_value_traits_with_no_pack>;
 		EXPECT_EQ(
 		(std::is_same_v<
 			type_with_no_pack::value_type,
@@ -191,23 +191,23 @@ TESTCASE(jopp2_generic_value_static_properties)
 	EXPECT_EQ((std::is_constructible_v<type_with_no_pack, int>), false);
 }
 
-TESTCASE(jopp2_generic_value_default_constructed)
+TESTCASE(son_generic_value_default_constructed)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val;
 	EXPECT_EQ(val.get<std::monostate>(), std::monostate{});
 }
 
-TESTCASE(jopp2_generic_value_construct_from_value)
+TESTCASE(son_generic_value_construct_from_value)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{12.5};
 	EXPECT_EQ(val.get<double>(), 12.5);
 }
 
-TESTCASE(jopp2_generic_value_get_wrong_type)
+TESTCASE(son_generic_value_get_wrong_type)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{12.5};
 
 	{
@@ -220,21 +220,21 @@ TESTCASE(jopp2_generic_value_get_wrong_type)
 		std::ignore = val.get<std::string>();
 		EXPECT_EQ(true, false);
 	}
-	catch(jopp2::exception const& e)
+	catch(son::exception const& e)
 	{
 		EXPECT_EQ(e.what(), std::string_view{"Current value has an unexpected type"});
 	}
 }
 
-TESTCASE(jopp2_generic_value_get_by_name_not_an_object)
+TESTCASE(son_generic_value_get_by_name_not_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{12.5};
 
 	{
 		auto const stored_val_ptr = val.get_if_by_name<double>("Foobar");
 		EXPECT_EQ(stored_val_ptr, nullptr);
-		EXPECT_EQ(stored_val_ptr.error_code(), jopp2::lookup_error_code::value_not_an_object);
+		EXPECT_EQ(stored_val_ptr.error_code(), son::lookup_error_code::value_not_an_object);
 	}
 
 	try
@@ -242,7 +242,7 @@ TESTCASE(jopp2_generic_value_get_by_name_not_an_object)
 		std::ignore = val.get_by_name<double>("Foobar");
 		EXPECT_EQ(true, false);
 	}
-	catch(jopp2::exception const& e)
+	catch(son::exception const& e)
 	{
 		EXPECT_EQ(
 			e.what(),
@@ -251,15 +251,15 @@ TESTCASE(jopp2_generic_value_get_by_name_not_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_get_by_name_key_not_found)
+TESTCASE(son_generic_value_get_by_name_key_not_found)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 
 	{
 		auto const stored_val_ptr = val.get_if_by_name<double>("Foobar");
 		EXPECT_EQ(stored_val_ptr, nullptr);
-		EXPECT_EQ(stored_val_ptr.error_code(), jopp2::lookup_error_code::key_not_found);
+		EXPECT_EQ(stored_val_ptr.error_code(), son::lookup_error_code::key_not_found);
 	}
 
 	try
@@ -267,7 +267,7 @@ TESTCASE(jopp2_generic_value_get_by_name_key_not_found)
 		std::ignore = val.get_by_name<double>("Foobar");
 		EXPECT_EQ(true, false);
 	}
-	catch(jopp2::exception const& e)
+	catch(son::exception const& e)
 	{
 		EXPECT_EQ(
 			e.what(),
@@ -276,16 +276,16 @@ TESTCASE(jopp2_generic_value_get_by_name_key_not_found)
 	}
 }
 
-TESTCASE(jopp2_generic_value_get_by_name_wrong_type)
+TESTCASE(son_generic_value_get_by_name_wrong_type)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 	val.store_value_as(std::string{"This is a string"}, "Foobar");
 
 	{
 		auto const stored_val_ptr = val.get_if_by_name<double>("Foobar");
 		EXPECT_EQ(stored_val_ptr, nullptr);
-		EXPECT_EQ(stored_val_ptr.error_code(), jopp2::lookup_error_code::unexpected_type);
+		EXPECT_EQ(stored_val_ptr.error_code(), son::lookup_error_code::unexpected_type);
 	}
 
 	try
@@ -293,7 +293,7 @@ TESTCASE(jopp2_generic_value_get_by_name_wrong_type)
 		std::ignore = val.get_by_name<double>("Foobar");
 		EXPECT_EQ(true, false);
 	}
-	catch(jopp2::exception const& e)
+	catch(son::exception const& e)
 	{
 		EXPECT_EQ(
 			e.what(),
@@ -302,9 +302,9 @@ TESTCASE(jopp2_generic_value_get_by_name_wrong_type)
 	}
 }
 
-TESTCASE(jopp2_generic_value_get_by_name_succesful)
+TESTCASE(son_generic_value_get_by_name_succesful)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 	val.store_value_as(12.5, "Foobar");
 
@@ -316,9 +316,9 @@ TESTCASE(jopp2_generic_value_get_by_name_succesful)
 	EXPECT_EQ(val.get_by_name<double>("Foobar"), 12.5);
 }
 
-TESTCASE(jopp2_generic_value_try_store_value_as_value_is_not_an_object)
+TESTCASE(son_generic_value_try_store_value_as_value_is_not_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{};
 	auto const res = val.try_store_value_as(12.5, "Foobar");
 	EXPECT_EQ(res.value, nullptr);
@@ -326,9 +326,9 @@ TESTCASE(jopp2_generic_value_try_store_value_as_value_is_not_an_object)
 	EXPECT_EQ(res.was_inserted, false);
 }
 
-TESTCASE(jopp2_generic_value_try_store_value_value_is_an_object)
+TESTCASE(son_generic_value_try_store_value_value_is_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 
 	{
@@ -346,9 +346,9 @@ TESTCASE(jopp2_generic_value_try_store_value_value_is_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_store_value_as_value_is_not_an_object)
+TESTCASE(son_generic_value_store_value_as_value_is_not_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{};
 	try
 	{
@@ -361,9 +361,9 @@ TESTCASE(jopp2_generic_value_store_value_as_value_is_not_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_store_value_as_value_is_an_object)
+TESTCASE(son_generic_value_store_value_as_value_is_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 	{
 		auto const res = val.store_value_as(12.5, std::string{"This is a longer key"});
@@ -382,9 +382,9 @@ TESTCASE(jopp2_generic_value_store_value_as_value_is_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_try_store_key_value_value_is_not_an_object)
+TESTCASE(son_generic_value_try_store_key_value_value_is_not_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{};
 	auto const res = val.try_store_key_value(json_value::map_value_type{"Foobar", 12.5});
 	EXPECT_EQ(res.was_inserted, false);
@@ -392,9 +392,9 @@ TESTCASE(jopp2_generic_value_try_store_key_value_value_is_not_an_object)
 	EXPECT_EQ(res.value, nullptr);
 }
 
-TESTCASE(jopp2_generic_value_try_store_key_value_value_is_an_object)
+TESTCASE(son_generic_value_try_store_key_value_value_is_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 	{
 		auto const res = val.try_store_key_value(json_value::map_value_type{"Foobar", 12.5});
@@ -411,9 +411,9 @@ TESTCASE(jopp2_generic_value_try_store_key_value_value_is_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_store_key_value_value_is_not_an_object)
+TESTCASE(son_generic_value_store_key_value_value_is_not_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{};
 	try
 	{
@@ -429,9 +429,9 @@ TESTCASE(jopp2_generic_value_store_key_value_value_is_not_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_store_key_value_value_is_an_object)
+TESTCASE(son_generic_value_store_key_value_value_is_an_object)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 
 	{
@@ -454,25 +454,25 @@ TESTCASE(jopp2_generic_value_store_key_value_value_is_an_object)
 	}
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_not_a_sequence)
+TESTCASE(son_generic_value_try_store_at_end_not_a_sequence)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 	auto const res = val.try_store_at_end(134.0);
 	EXPECT_EQ(res, nullptr);
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_value_is_a_string)
+TESTCASE(son_generic_value_try_store_at_end_value_is_a_string)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::string{"Hej hopp"}};
 	auto const res = val.try_store_at_end(134.0);
 	EXPECT_EQ(res, nullptr);
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_typed_container_with_matching_type)
+TESTCASE(son_generic_value_try_store_at_end_typed_container_with_matching_type)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	{
 		json_value val{std::vector{1.0, 2.0, 3.0}};
 		auto const res = val.try_store_at_end(5.0);
@@ -494,9 +494,9 @@ TESTCASE(jopp2_generic_value_try_store_at_end_typed_container_with_matching_type
 	}
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_leaf_value_in_empty_generic_container)
+TESTCASE(son_generic_value_try_store_at_end_leaf_value_in_empty_generic_container)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::vector<json_value>{}};
 	auto const res = val.try_store_at_end(5.0);
 	EXPECT_EQ(*res, 5.0);
@@ -504,9 +504,9 @@ TESTCASE(jopp2_generic_value_try_store_at_end_leaf_value_in_empty_generic_contai
 	EXPECT_EQ(val.get<std::vector<double>>().back(), 5.0);
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_generic_value_in_empty_leaf_container)
+TESTCASE(son_generic_value_try_store_at_end_generic_value_in_empty_leaf_container)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::vector<double>{}};
 	auto const res = val.try_store_at_end(json_value{"Foo"});
 	EXPECT_EQ(res->get<std::string>(), "Foo");
@@ -514,9 +514,9 @@ TESTCASE(jopp2_generic_value_try_store_at_end_generic_value_in_empty_leaf_contai
 	EXPECT_EQ(val.get<std::vector<json_value>>().back().get<std::string>(), "Foo");
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_leaf_value_in_non_empty_generic_container)
+TESTCASE(son_generic_value_try_store_at_end_leaf_value_in_non_empty_generic_container)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::vector<json_value>{}};
 	{
 		auto const res = val.try_store_at_end(json_value{"Foo"});
@@ -533,9 +533,9 @@ TESTCASE(jopp2_generic_value_try_store_at_end_leaf_value_in_non_empty_generic_co
 	}
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_leaf_value_in_non_empty_container_of_different_type)
+TESTCASE(son_generic_value_try_store_at_end_leaf_value_in_non_empty_container_of_different_type)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::vector{1.0, 2.0, 4.0}};
 	auto const res = val.try_store_at_end(std::string{"This is a string"});
 	EXPECT_EQ(*res, "This is a string");
@@ -544,9 +544,9 @@ TESTCASE(jopp2_generic_value_try_store_at_end_leaf_value_in_non_empty_container_
 	EXPECT_EQ(std::size(val.get<std::vector<json_value>>()), 4);
 }
 
-TESTCASE(jopp2_generic_value_try_store_at_end_generic_value_in_non_empty_container_of_different_type)
+TESTCASE(son_generic_value_try_store_at_end_generic_value_in_non_empty_container_of_different_type)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::vector{1.0, 2.0, 4.0}};
 	auto const res = val.try_store_at_end(json_value{std::string{"This is a string"}});
 	EXPECT_EQ(res->get<std::string>(), "This is a string");
@@ -555,9 +555,9 @@ TESTCASE(jopp2_generic_value_try_store_at_end_generic_value_in_non_empty_contain
 	EXPECT_EQ(std::size(val.get<std::vector<json_value>>()), 4);
 }
 
-TESTCASE(jopp2_generic_value_store_at_end_value_is_not_a_sequence)
+TESTCASE(son_generic_value_store_at_end_value_is_not_a_sequence)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::string{"foo"}};
 	try
 	{
@@ -570,17 +570,17 @@ TESTCASE(jopp2_generic_value_store_at_end_value_is_not_a_sequence)
 	}
 }
 
-TESTCASE(jopp2_generic_value_store_at_end_value_is_a_sequence)
+TESTCASE(son_generic_value_store_at_end_value_is_a_sequence)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{std::vector<std::string>{"foo"}};
 	auto const& res = val.store_at_end(std::string{"bar"});
 	EXPECT_EQ(res, "bar");
 }
 
-TESTCASE(jopp2_generic_value_insanely_deep_tree)
+TESTCASE(son_generic_value_insanely_deep_tree)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 	json_value val{json_value::object{}};
 	auto current = val.get_if<json_value::object>();
 	for(size_t k = 0; k != 1024ZU*256; ++k)
@@ -615,9 +615,9 @@ namespace
 			}
 		}
 
-		jopp2::node_visitor_status handle_leaf_value(
+		son::node_visitor_status handle_leaf_value(
 			std::monostate /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -627,12 +627,12 @@ namespace
 				std::max(context.parent_container_size, 1ZU),
 				context.is_last_node()? "": ","
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_leaf_value(
+		son::node_visitor_status handle_leaf_value(
 			bool_wrapper value,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -643,12 +643,12 @@ namespace
 				value == bool_wrapper::enabled? "true" : "false",
 				context.is_last_node()? "": ","
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_leaf_value(
+		son::node_visitor_status handle_leaf_value(
 			double value,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -659,12 +659,12 @@ namespace
 				value,
 				context.is_last_node()? "": ","
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_simple_array(
-			jopp2::container_proxy<std::string const>& value,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_simple_array(
+			son::container_proxy<std::string const>& value,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -678,12 +678,12 @@ namespace
 			{ output.get() += item; }
 			output.get() += std::format("{}\n", context.is_last_node()? "": ",");
 			value.pop_active_elements();
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_simple_array(
-			jopp2::container_proxy<std::vector<std::monostate> const>& value,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_simple_array(
+			son::container_proxy<std::vector<std::monostate> const>& value,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -707,12 +707,12 @@ namespace
 			do_indent(context.depth);
 			output.get() += std::format("]{}\n", context.is_last_node()?"" : ",");
 			value.pop_active_elements();
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_simple_array(
-			jopp2::container_proxy<std::vector<bool_wrapper> const>& value,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_simple_array(
+			son::container_proxy<std::vector<bool_wrapper> const>& value,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -737,12 +737,12 @@ namespace
 			do_indent(context.depth);
 			output.get() += std::format("]{}\n", context.is_last_node()?"" : ",");
 			value.pop_active_elements();
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_simple_array(
-			jopp2::container_proxy<std::vector<double> const>& value,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_simple_array(
+			son::container_proxy<std::vector<double> const>& value,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -767,12 +767,12 @@ namespace
 			do_indent(context.depth);
 			output.get() += std::format("]{}\n", context.is_last_node()?"" : ",");
 			value.pop_active_elements();
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_begin_of_container(
-			jopp2::container_proxy<std::vector<std::string> const>& /*unused*/,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_begin_of_container(
+			son::container_proxy<std::vector<std::string> const>& /*unused*/,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -781,24 +781,24 @@ namespace
 				context.node_index + 1,
 				std::max(context.parent_container_size, 1ZU)
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_end_of_container(
-			jopp2::container_proxy<std::vector<std::string> const>& /*unused*/,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_end_of_container(
+			son::container_proxy<std::vector<std::string> const>& /*unused*/,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
 			output.get() += std::format("]{}\n", context.is_last_node()?"" : ",");
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_begin_of_container(
-			jopp2::container_proxy<
-				typename jopp2::generic_value<json_value_traits_sorted>::object const
+		son::node_visitor_status handle_begin_of_container(
+			son::container_proxy<
+				typename son::generic_value<json_value_traits_sorted>::object const
 			>& /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -807,26 +807,26 @@ namespace
 				context.node_index + 1,
 				std::max(context.parent_container_size, 1ZU)
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_end_of_container(
-			jopp2::container_proxy<
-				typename jopp2::generic_value<json_value_traits_sorted>::object const
+		son::node_visitor_status handle_end_of_container(
+			son::container_proxy<
+				typename son::generic_value<json_value_traits_sorted>::object const
 			>& /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
 			output.get() += std::format("}}{}\n", context.is_last_node()?"" : ",");
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_begin_of_container(
-			jopp2::container_proxy<
-				std::vector<jopp2::generic_value<json_value_traits_sorted>::object> const
+		son::node_visitor_status handle_begin_of_container(
+			son::container_proxy<
+				std::vector<son::generic_value<json_value_traits_sorted>::object> const
 			>& /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -835,26 +835,26 @@ namespace
 				context.node_index + 1,
 				std::max(context.parent_container_size, 1ZU)
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_end_of_container(
-			jopp2::container_proxy<
-				std::vector<jopp2::generic_value<json_value_traits_sorted>::object> const
+		son::node_visitor_status handle_end_of_container(
+			son::container_proxy<
+				std::vector<son::generic_value<json_value_traits_sorted>::object> const
 			>& /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
 			output.get() += std::format("]{}\n", context.is_last_node()?"" : ",");
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_begin_of_container(
-			jopp2::container_proxy<
-				std::vector<jopp2::generic_value<json_value_traits_sorted>> const
+		son::node_visitor_status handle_begin_of_container(
+			son::container_proxy<
+				std::vector<son::generic_value<json_value_traits_sorted>> const
 			>& /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -863,24 +863,24 @@ namespace
 				context.node_index + 1,
 				std::max(context.parent_container_size, 1ZU)
 			);
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_end_of_container(
-			jopp2::container_proxy<
-				std::vector<jopp2::generic_value<json_value_traits_sorted>> const
+		son::node_visitor_status handle_end_of_container(
+			son::container_proxy<
+				std::vector<son::generic_value<json_value_traits_sorted>> const
 			>& /*unused*/,
-			jopp2::value_visitation_context const& context
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
 			output.get() += std::format("]{}\n", context.is_last_node()?"" : ",");
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_key(
-			jopp2::container_proxy<std::string const>& key,
-			jopp2::value_visitation_context const& context
+		son::node_visitor_status handle_key(
+			son::container_proxy<std::string const>& key,
+			son::value_visitation_context const& context
 		)
 		{
 			do_indent(context.depth);
@@ -889,27 +889,27 @@ namespace
 			output.get() += ": ";
 			key.pop_active_elements();
 			m_ident_next = false;
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
-		jopp2::node_visitor_status handle_subtype_id(
-			jopp2::container_proxy<std::string const>& id,
-			jopp2::value_visitation_context const& /*unused*/
+		son::node_visitor_status handle_subtype_id(
+			son::container_proxy<std::string const>& id,
+			son::value_visitation_context const& /*unused*/
 		) const
 		{
 			for(auto const& item : id.active_range())
 			{ output.get() += item; }
 			id.pop_active_elements();
-			return jopp2::node_visitor_status::ready;
+			return son::node_visitor_status::ready;
 		}
 
 		bool m_ident_next = true;
 	};
 }
 
-TESTCASE(jopp2_generic_value_visit_nodes)
+TESTCASE(son_generic_value_visit_nodes)
 {
-	using json_value = jopp2::generic_value<json_value_traits>;
+	using json_value = son::generic_value<json_value_traits>;
 
 	static_assert(json_value::is_leaf_value<double>);
 	static_assert(!json_value::is_leaf_value<int>);
@@ -1101,12 +1101,12 @@ TESTCASE(jopp2_generic_value_visit_nodes)
 
 	value.store_value_as(std::string{"lorem ipsum"}, "string_value");
 
-	using json_value_sorted = jopp2::generic_value<json_value_traits_sorted>;
+	using json_value_sorted = son::generic_value<json_value_traits_sorted>;
 
 	auto const result = clone<json_value_sorted>(value);
 	std::string output;
-	jopp2::node_visitor nv{result, test_node_visitor{output}};
-	while(nv.visit_nodes() != jopp2::node_visitor_status::ready){}
+	son::node_visitor nv{result, test_node_visitor{output}};
+	while(nv.visit_nodes() != son::node_visitor_status::ready){}
 
 	static constexpr auto expected_output = R"((1 of 1) {
     array_of_arrays_of_bools: (1 of 15) [

@@ -8,7 +8,7 @@
  * \brief Contains type traits commonly used in the implementation
  */
 
-namespace jopp2
+namespace son
 {
 	/**
 	 * \brief Tests whether or not `T` is an instantiations of `C`

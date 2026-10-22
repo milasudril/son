@@ -10,7 +10,7 @@
  * \brief Contains helpers for managing template parameter packs
  */
 
-namespace jopp2
+namespace son
 {
 	/**
 	 * \brief A class for holding a pack

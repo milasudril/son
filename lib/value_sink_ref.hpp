@@ -6,7 +6,7 @@
 
 #include <functional>
 
-namespace jopp2
+namespace son
 {
 	template<class T>
 	struct source_value_type_tag
