@@ -7,7 +7,8 @@ namespace son
 	{
 		done,
 		illegal_char_in_string,
-		invalid_escape_sequence
+		invalid_escape_sequence,
+		more_data_needed
 	};
 
 	enum class accept_codepoint_hexdigit_result
@@ -18,17 +19,23 @@ namespace son
 	};
 
 	template<class StringDecoder>
-	inline string_decode_result from_json_string(StringDecoder& decoder)
+	inline string_decode_result decode_quoted_string(StringDecoder& decoder)
 	{
 		auto src_range = decoder.get_input_range();
 		using src_range_type = decltype(src_range);
 		auto first = src_range.begin();
 		auto const last = src_range.end();
 
+		auto commit = [&](auto status){
+			if(status == string_decode_result::done)
+			{ ++first; }
+			decoder.set_source_range(src_range_type{first, last});
+			return status;
+		};
+
 		while(first != last)
 		{
 			auto const ch_in = *first;
-			++first;
 			using decoder_state = StringDecoder::state;
 			switch(decoder.get_state())
 			{
@@ -41,11 +48,11 @@ namespace son
 
 						case '"':
 							decoder.set_source_range(src_range_type(first, last));
-							return string_decode_result::done;
+							return commit(string_decode_result::done);
 
 						default:
 							if(!decoder.accept_char(ch_in))
-							{ return string_decode_result::illegal_char_in_string; }
+							{ return commit(string_decode_result::illegal_char_in_string); }
 					}
 					break;
 
@@ -58,7 +65,7 @@ namespace son
 
 						default:
 							if(!decoder.accept_char(ch_in))
-							{ return string_decode_result::illegal_char_in_string; }
+							{ return commit(string_decode_result::illegal_char_in_string); }
 
 							decoder.set_state(decoder_state::string_normal);
 					}
@@ -72,14 +79,16 @@ namespace son
 							break;
 
 						case accept_codepoint_hexdigit_result::illegal_char_in_string:
-							return string_decode_result::illegal_char_in_string;
+							return commit(string_decode_result::illegal_char_in_string);
 
 						case accept_codepoint_hexdigit_result::invalid_input:
-							return string_decode_result::invalid_escape_sequence;
+							return commit(string_decode_result::invalid_escape_sequence);
 					}
 					break;
 			}
+			++first;
 		}
+		return string_decode_result::more_data_needed;
 	}
 }
 
