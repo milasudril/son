@@ -1,5 +1,5 @@
-#ifndef JOPP_VARIANT_UTILS_HPP
-#define JOPP_VARIANT_UTILS_HPP
+#ifndef SON_VARIANT_UTILS_HPP
+#define SON_VARIANT_UTILS_HPP
 
 #include "./exception.hpp"
 #include "./common_traits.hpp"

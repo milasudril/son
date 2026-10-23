@@ -1,5 +1,5 @@
-#ifndef JOPP2_CONTAINER_PROXY_HPP
-#define JOPP2_CONTAINER_PROXY_HPP
+#ifndef SON_CONTAINER_PROXY_HPP
+#define SON_CONTAINER_PROXY_HPP
 
 #include <cstddef>
 #include <ranges>

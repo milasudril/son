@@ -1,5 +1,5 @@
-#ifndef JOPP2_CLEAR_NODES_VISITOR_HPP
-#define JOPP2_CLEAR_NODES_VISITOR_HPP
+#ifndef SON_CLEAR_NODES_VISITOR_HPP
+#define SON_CLEAR_NODES_VISITOR_HPP
 
 #include "./node_visitor_adaptor.hpp"
 

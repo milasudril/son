@@ -1,5 +1,5 @@
-#ifndef JOPP2_COMMON_TRAITS_HPP
-#define JOPP2_COMMON_TRAITS_HPP
+#ifndef SON_COMMON_TRAITS_HPP
+#define SON_COMMON_TRAITS_HPP
 
 #include <type_traits>
 

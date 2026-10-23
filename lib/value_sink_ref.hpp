@@ -1,5 +1,5 @@
-#ifndef JOPP_VALUE_SINK_REF_HPP
-#define JOPP_VALUE_SINK_REF_HPP
+#ifndef SON_VALUE_SINK_REF_HPP
+#define SON_VALUE_SINK_REF_HPP
 
 #include "./template_param_pack.hpp"
 #include "./variant_utils.hpp"

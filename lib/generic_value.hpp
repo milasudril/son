@@ -1,5 +1,5 @@
-#ifndef JOPP_GENERIC_VALUE_HPP
-#define JOPP_GENERIC_VALUE_HPP
+#ifndef SON_GENERIC_VALUE_HPP
+#define SON_GENERIC_VALUE_HPP
 
 #include "./variant_utils.hpp"
 #include "./template_param_pack.hpp"

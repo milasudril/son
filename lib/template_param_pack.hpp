@@ -1,5 +1,5 @@
-#ifndef JOPP2_TEMPLATE_PARAM_PACK_HPP
-#define JOPP2_TEMPLATE_PARAM_PACK_HPP
+#ifndef SON_TEMPLATE_PARAM_PACK_HPP
+#define SON_TEMPLATE_PARAM_PACK_HPP
 
 #include <type_traits>
 #include <cstddef>

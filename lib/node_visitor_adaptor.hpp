@@ -1,5 +1,5 @@
-#ifndef JOPP_NODE_VISITOR_ADAPTOR_HPP
-#define JOPP_NODE_VISITOR_ADAPTOR_HPP
+#ifndef SON_NODE_VISITOR_ADAPTOR_HPP
+#define SON_NODE_VISITOR_ADAPTOR_HPP
 
 #include "./variant_utils.hpp"
 #include "./container_proxy.hpp"

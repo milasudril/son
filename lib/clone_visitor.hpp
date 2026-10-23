@@ -1,5 +1,5 @@
-#ifndef JOPP2_CLONE_VISITOR_HPP
-#define JOPP2_CLONE_VISITOR_HPP
+#ifndef SON_CLONE_VISITOR_HPP
+#define SON_CLONE_VISITOR_HPP
 
 #include "./value_sink_ref.hpp"
 #include "./template_param_pack.hpp"

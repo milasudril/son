@@ -1,5 +1,5 @@
-#ifndef JOPP_WITH_SUBTYPE_ID_HPP
-#define JOPP_WITH_SUBTYPE_ID_HPP
+#ifndef SON_WITH_SUBTYPE_ID_HPP
+#define SON_WITH_SUBTYPE_ID_HPP
 
 #include <utility>
 

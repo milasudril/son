@@ -1,5 +1,5 @@
-#ifndef JOPP_EXCEPTION_HPP
-#define JOPP_EXCEPTION_HPP
+#ifndef SON_EXCEPTION_HPP
+#define SON_EXCEPTION_HPP
 
 #include <format>
 #include <print>
