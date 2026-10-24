@@ -84,9 +84,71 @@ TESTCASE(son_stringconv_state_string_normal_handle_end_char)
 	);
 	decoder.set_input_range.expect_call_with_action(
 		[](std::string_view new_range){
-			EXPECT_EQ(new_range, std::string_view{"stuff after string"});
+			EXPECT_EQ(new_range, "stuff after string");
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(result, son::string_decode_result::done);
+}
+
+TESTCASE(son_stringconv_state_string_normal_other_char_invalid)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[](){
+			return std::string_view{"Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[](){
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.accept_char.expect_call_with_action([](char ch_in){
+		EXPECT_EQ(ch_in, 'S');
+		return false;
+	});
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "Some data");
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::illegal_char_in_string);
+}
+
+TESTCASE(son_stringconv_state_string_normal_other_char_valid)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[](){
+			return std::string_view{"Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[](){
+			return test_string_decoder::state::string_normal;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(9)
+		}
+	);
+	std::string output_string;
+	decoder.accept_char.expect_call_with_action(
+		[&output_string](char ch_in){
+			output_string += ch_in;
+			return true;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(9)
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(output_string, "Some data");
+	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
 }
