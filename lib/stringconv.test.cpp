@@ -206,3 +206,36 @@ TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(result, son::string_decode_result::illegal_char_in_string);
 }
+
+TESTCASE(son_stringconv_state_string_escape_other_char_valid)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[](){
+			return std::string_view{"n"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[](){
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_escape_char.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, 'n');
+			return true;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](test_string_decoder::state new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::string_normal);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
