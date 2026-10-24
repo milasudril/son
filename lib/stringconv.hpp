@@ -29,7 +29,7 @@ namespace son
 		auto commit = [&](auto status){
 			if(status == string_decode_result::done)
 			{ ++first; }
-			decoder.set_source_range(src_range_type{first, last});
+			decoder.set_input_range(src_range_type{first, last});
 			return status;
 		};
 
@@ -47,7 +47,7 @@ namespace son
 							break;
 
 						case '"':
-							decoder.set_source_range(src_range_type(first, last));
+							decoder.set_input_range(src_range_type(first, last));
 							return commit(string_decode_result::done);
 
 						default:
@@ -60,7 +60,7 @@ namespace son
 					switch(ch_in)
 					{
 						case 'u':
-							decoder.set_state(decoder_state::decode_unicode);
+							decoder.set_state(decoder_state::decode_codepoint);
 							break;
 
 						default:
@@ -71,7 +71,7 @@ namespace son
 					}
 					break;
 
-				case decoder_state::decode_unicode:
+				case decoder_state::decode_codepoint:
 					switch(decoder.accept_codepoint_hexdigit(ch_in))
 					{
 						case accept_codepoint_hexdigit_result::done:
