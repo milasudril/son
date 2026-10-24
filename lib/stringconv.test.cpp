@@ -43,9 +43,8 @@ TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
 	decoder.get_input_range.expect_call_with_action(
 		[](){
 			return std::string_view{"\\"};
-		})
-	;
-
+		}
+	);
 	decoder.get_state.expect_call_with_action(
 		[](){
 			return test_string_decoder::state::string_normal;
@@ -58,4 +57,26 @@ TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
 	);
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_string_normal_handle_end_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[](){
+			return std::string_view{"\"stuff after string"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[](){
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, std::string_view{"stuff after string"});
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::done);
 }

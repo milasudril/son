@@ -47,7 +47,6 @@ namespace son
 							break;
 
 						case StringDecoder::string_end_char:
-							decoder.set_input_range(src_range_type(first, last));
 							return commit(string_decode_result::done);
 
 						default:
