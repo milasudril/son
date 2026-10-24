@@ -42,11 +42,11 @@ namespace son
 				case decoder_state::string_normal:
 					switch(ch_in)
 					{
-						case '\\':
+						case StringDecoder::string_escape_char:
 							decoder.set_state(decoder_state::string_escape);
 							break;
 
-						case '"':
+						case StringDecoder::string_end_char:
 							decoder.set_input_range(src_range_type(first, last));
 							return commit(string_decode_result::done);
 
@@ -59,7 +59,7 @@ namespace son
 				case decoder_state::string_escape:
 					switch(ch_in)
 					{
-						case 'u':
+						case StringDecoder::codepoint_begin_char:
 							decoder.set_state(decoder_state::decode_codepoint);
 							break;
 
