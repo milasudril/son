@@ -63,7 +63,7 @@ namespace son
 							break;
 
 						default:
-							if(!decoder.accept_char(ch_in))
+							if(!decoder.accept_escape_char(ch_in))
 							{ return commit(string_decode_result::illegal_char_in_string); }
 
 							decoder.set_state(decoder_state::string_normal);

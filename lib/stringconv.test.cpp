@@ -21,6 +21,7 @@ namespace
 		TestFwk::mock_entry<state()> get_state;
 		TestFwk::mock_entry<void(state)> set_state;
 		TestFwk::mock_entry<bool(char)> accept_char;
+		TestFwk::mock_entry<bool(char)> accept_escape_char;
 		TestFwk::mock_entry<son::accept_codepoint_hexdigit_result(char)> accept_codepoint_hexdigit;
 
 		static constexpr auto string_escape_char = '\\';
@@ -151,4 +152,57 @@ TESTCASE(son_stringconv_state_string_normal_other_char_valid)
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(output_string, "Some data");
 	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_string_escape_codepoint_begin_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[](){
+			return std::string_view{"u"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[](){
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](test_string_decoder::state new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::decode_codepoint);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[](){
+			return std::string_view{"Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[](){
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_escape_char.expect_call_with_action([](char ch_in){
+		EXPECT_EQ(ch_in, 'S');
+		return false;
+	});
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "Some data");
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::illegal_char_in_string);
 }
