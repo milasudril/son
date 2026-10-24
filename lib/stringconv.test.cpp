@@ -33,6 +33,11 @@ TESTCASE(son_stringconv_empty_returns_more_data_needed)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action([](){return std::string_view{}; });
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view str){
+			EXPECT_EQ(str.empty(), true);
+		}
+	);
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
 }
@@ -53,6 +58,11 @@ TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
 	decoder.set_state.expect_call_with_action(
 		[](test_string_decoder::state new_state){
 			EXPECT_EQ(new_state, test_string_decoder::state::string_escape);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view str){
+			EXPECT_EQ(str.empty(), true);
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);

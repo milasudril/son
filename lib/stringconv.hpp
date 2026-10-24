@@ -87,7 +87,7 @@ namespace son
 			}
 			++first;
 		}
-		return string_decode_result::more_data_needed;
+		return commit(string_decode_result::more_data_needed);
 	}
 }
 
