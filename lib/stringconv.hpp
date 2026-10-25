@@ -8,14 +8,16 @@ namespace son
 		done,
 		illegal_char_in_string,
 		invalid_escape_sequence,
-		more_data_needed
+		more_data_needed,
+		illformed_escaped_utf16_surrogate_pair
 	};
 
 	enum class accept_codepoint_hexdigit_result
 	{
 		done,
 		illegal_char_in_string,
-		invalid_input
+		invalid_input,
+		second_surrogate_element_required
 	};
 
 	template<class StringDecoder>
@@ -82,6 +84,34 @@ namespace son
 
 						case accept_codepoint_hexdigit_result::invalid_input:
 							return commit(string_decode_result::invalid_escape_sequence);
+
+						case accept_codepoint_hexdigit_result::second_surrogate_element_required:
+							decoder.set_state(decoder_state::before_second_surrogate_element_escseq);
+							break;
+					}
+					break;
+
+				case decoder_state::before_second_surrogate_element_escseq:
+					switch(ch_in)
+					{
+						case StringDecoder::string_escape_char:
+							decoder.set_state(decoder_state::at_second_surrogate_element_escseq);
+							break;
+
+						default:
+							return commit(string_decode_result::illformed_escaped_utf16_surrogate_pair);
+					}
+					break;
+
+				case decoder_state::at_second_surrogate_element_escseq:
+					switch(ch_in)
+					{
+						case StringDecoder::codepoint_begin_char:
+							decoder.set_state(decoder_state::decode_codepoint);
+							break;
+
+						default:
+							return commit(string_decode_result::illformed_escaped_utf16_surrogate_pair);
 					}
 					break;
 			}

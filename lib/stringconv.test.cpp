@@ -15,7 +15,9 @@ namespace
 		enum class state{
 			string_normal,
 			string_escape,
-			decode_codepoint
+			decode_codepoint,
+			before_second_surrogate_element_escseq,
+			at_second_surrogate_element_escseq
 		};
 
 		TestFwk::mock_entry<state()> get_state;
