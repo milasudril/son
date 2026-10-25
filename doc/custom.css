@@ -4,8 +4,7 @@ html
 	--font-mono-family: "Cascadia Code Roman", monospace;
 }
 
-
-/*TODO: Set theme colors*/
+span.mlabel{font-size: 0.85em !important}
 
 :root
 {
@@ -38,7 +37,8 @@ html
 	--mandatory-note-color-light: #C8D8FF;
 }
 
-html {
+html
+{
 	--blockquote-background: var(--complement-color-light);
 	--blockquote-foreground: #000000;
 	--bug-color: var(--prohib-note-color-mid);
@@ -66,7 +66,7 @@ html {
 	--note-color: var(--safe-note-color-mid);
 	--note-color-dark: var(--safe-note-color-dark);
 	--note-color-darker: var(--safe-note-color-dark);
-	--on-primary-color: var(--complement-color-light);
+	--on-primary-color: #000000;
 	--page-background-color: #ffffff;
 	--page-foreground-color: #000000;
 	--page-secondary-foreground-color: var(--primary-color-light);
@@ -110,75 +110,132 @@ tr.odd, tr.markdownTableOdd{background-color: var(--odd-color) !important}
 }
 #nav-tree .selected, #nav-tree .selected a{color: var(--complement-color-mid) !important}
 #nav-tree .selected::after{background-color: var(--complement-color-mid)}
+a.el{color: var(--primary-color-dark) !important}
 
-/* 3. Automatic System Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-    html:not(.light-mode) {
-        --primary-color: var(--primary-color-mid);
-        --primary-dark-color: var(--primary-color-light);
-        --primary-light-color: var(--primary-color-dark);
+	html:not(.light-mode) {
+		--blockquote-background: var(--complement-color-dark);
+		--blockquote-foreground: #ffffff;
+		--bug-color: var(--prohib-note-color-mid);
+		--bug-color-dark: var(--prohib-note-color-light);
+		--bug-color-darker: var(--prohib-note-color-light);
+		--code-background: var(--complement-color-dark);
+		--deprecated-color: var(--prohib-note-color-dark);
+		--deprecated-color-dark: var(--prohib-note-color-mid);
+		--deprecated-color-darker: var(--prohib-note-color-light);
+		--fragment-background: #1e1e1e;
+		--fragment-comment: var(--analog-color-a-light);
+		--fragment-foreground: #ffffff;
+		--fragment-keyword: var(--primary-color-light);
+		--fragment-keywordflow: var(--analog-color-b-light);
+		--fragment-keywordtype: var(--analog-color-a-light);
+		--fragment-linenumber-background: #252525;
+		--fragment-linenumber-border: var(--primary-color-dark);
+		--fragment-linenumber-color: var(--primary-color-dark);
+		--fragment-link: var(--complement-color-light);
+		--fragment-preprocessor: var(--fragment-foreground);
+		--fragment-token: var(--fragment-foreground);
+		--invariant-color: var(--mandatory-note-color-mid);
+		--invariant-color-dark: var(--mandatory-note-color-light);
+		--invariant-color-darker: var(--mandatory-note-color-light);
+		--note-color: var(--safe-note-color-mid);
+		--note-color-dark: var(--safe-note-color-light);
+		--note-color-darker: var(--safe-note-color-light);
+		--on-primary-color: #ffffff;
+		--page-background-color: #121212;
+		--page-foreground-color: #ffffff;
+		--page-secondary-foreground-color: var(--primary-color-dark);
+		--primary-color: var(--primary-color-mid);
+		--primary-dark-color: var(--primary-color-light);
+		--primary-light-color: var(--primary-color-dark);
+		--separator-color: #2a2a2a;
+		--side-nav-background: var(--analog-color-a-dark);
+		--side-nav-foreground: var(--complement-color-light);
+		--tablehead-background: var(--primary-color-dark);
+		--todo-color: var(--warning-note-color-mid);
+		--todo-color-dark: var(--warning-note-color-light);
+		--todo-color-darker: var(--warning-note-color-light);
+		--warning-color: var(--warning-note-color-mid);
+		--warning-color-dark: var(--warning-note-color-light);
+		--warning-color-darker: var(--warning-note-color-light);
+		--even-color: #1a1a1a;
+		--odd-color: #1e1e1e;
+		--nav-text-normal-color: #ffffff;
+		--nav-breadcrumb-separator-color: #2a2a2a;
+	}
 
-        --page-background-color: #121612;
-        --page-foreground-color: #e0e6e0;
-        --page-secondary-foreground-color: #a0a8a0;
+	tr.even, tr.markdownTableRowEven { background-color: var(--even-color) !important; }
+	tr.odd, tr.markdownTableOdd { background-color: var(--odd-color) !important; }
 
-        /* Navigation, Header, Footer & Sidebar in Dark Mode */
-        --nav-background-color: var(--primary-color-dark);
-        --nav-foreground-color: var(--primary-color-light);
-        --side-nav-background: #171f17;
+	#titlearea { width: 100%; background-color: var(--primary-color-dark); }
+	#nav-path { width: 100%; background-color: var(--analog-color-b-dark); }
 
-        /* Code Blocks & Fragments in Dark Mode */
-        --fragment-background: #1a221a;
-        --fragment-foreground: #d0d8d0;
+	.navpath li.navelem a {
+			color: var(--analog-color-b-light) !important;
+	}
 
-        /* Links & Highlights in Dark Mode */
-        --link-color: var(--complement-color-light);
+	#nav-path li.navelem:not(:has(.el))::after {
+			background: var(--analog-color-b-mid);
+	}
 
-        /* Tables in Dark Mode */
-        --table-row-background-even: var(--analog-color-a-dark);
-        --table-row-background-odd: var(--analog-color-b-dark);
+	#nav-path ul { width: 100%; background-color: var(--analog-color-b-dark); }
 
-        /* Search Bar & Inputs in Dark Mode */
-        --search-box-background: #1a221a;
-        --search-box-border-color: var(--primary-color-dark);
-        --search-box-focus-border-color: var(--complement-color-mid);
+	.navpath li.footer {
+			color: #ffffff;
+	}
 
-        /* Admonitions in Dark Mode */
-        --theme-opt-in-background: #0d232a;
-    }
+	#nav-tree .selected, #nav-tree .selected a{color: var(--complement-color-mid) !important}
+	#nav-tree .selected::after { background-color: var(--complement-color-light); }
+	a.el{color: var(--primary-color-light) !important}
 }
 
-/* 4. Manual Doxygen-Awesome Dark Mode Toggle Support */
 html.dark-mode {
-    --primary-color: var(--primary-color-mid);
-    --primary-dark-color: var(--primary-color-light);
-    --primary-light-color: var(--primary-color-dark);
-
-    --page-background-color: #121612;
-    --page-foreground-color: #e0e6e0;
-    --page-secondary-foreground-color: #a0a8a0;
-
-    /* Navigation, Header, Footer & Sidebar in Dark Mode */
-    --nav-background-color: var(--primary-color-dark);
-    --nav-foreground-color: var(--primary-color-light);
-    --side-nav-background: #171f17;
-
-    /* Code Blocks & Fragments in Dark Mode */
-    --fragment-background: #1a221a;
-    --fragment-foreground: #d0d8d0;
-
-    /* Links & Highlights in Dark Mode */
-    --link-color: var(--complement-color-light);
-
-    /* Tables in Dark Mode */
-    --table-row-background-even: var(--analog-color-a-dark);
-    --table-row-background-odd: var(--analog-color-b-dark);
-
-    /* Search Bar & Inputs in Dark Mode */
-    --search-box-background: #1a221a;
-    --search-box-border-color: var(--primary-color-dark);
-    --search-box-focus-border-color: var(--complement-color-mid);
-
-    /* Admonitions in Dark Mode */
-    --theme-opt-in-background: #0d232a;
+	--blockquote-background: var(--complement-color-dark);
+	--blockquote-foreground: #ffffff;
+	--bug-color: var(--prohib-note-color-mid);
+	--bug-color-dark: var(--prohib-note-color-light);
+	--bug-color-darker: var(--prohib-note-color-light);
+	--code-background: var(--complement-color-dark);
+	--deprecated-color: var(--prohib-note-color-dark);
+	--deprecated-color-dark: var(--prohib-note-color-mid);
+	--deprecated-color-darker: var(--prohib-note-color-light);
+	--fragment-background: #1e1e1e;
+	--fragment-comment: var(--analog-color-a-light);
+	--fragment-foreground: #ffffff;
+	--fragment-keyword: var(--primary-color-light);
+	--fragment-keywordflow: var(--analog-color-b-light);
+	--fragment-keywordtype: var(--analog-color-a-light);
+	--fragment-linenumber-background: #252525;
+	--fragment-linenumber-border: var(--primary-color-dark);
+	--fragment-linenumber-color: var(--primary-color-dark);
+	--fragment-link: var(--complement-color-light);
+	--fragment-preprocessor: var(--fragment-foreground);
+	--fragment-token: var(--fragment-foreground);
+	--invariant-color: var(--mandatory-note-color-mid);
+	--invariant-color-dark: var(--mandatory-note-color-light);
+	--invariant-color-darker: var(--mandatory-note-color-light);
+	--note-color: var(--safe-note-color-mid);
+	--note-color-dark: var(--safe-note-color-light);
+	--note-color-darker: var(--safe-note-color-light);
+	--on-primary-color: #ffffff;
+	--page-background-color: #121212;
+	--page-foreground-color: #ffffff;
+	--page-secondary-foreground-color: var(--primary-color-dark);
+	--primary-color: var(--primary-color-mid);
+	--primary-dark-color: var(--primary-color-light);
+	--primary-light-color: var(--primary-color-dark);
+	--separator-color: #2a2a2a;
+	--side-nav-background: var(--analog-color-a-dark);
+	--side-nav-foreground: var(--complement-color-light);
+	--tablehead-background: var(--primary-color-dark);
+	--todo-color: var(--warning-note-color-mid);
+	--todo-color-dark: var(--warning-note-color-light);
+	--todo-color-darker: var(--warning-note-color-light);
+	--warning-color: var(--warning-note-color-mid);
+	--warning-color-dark: var(--warning-note-color-light);
+	--warning-color-darker: var(--warning-note-color-light);
+	--even-color: #1a1a1a;
+	--odd-color: #1e1e1e;
+	--nav-text-normal-color: #ffffff;
+	--nav-breadcrumb-separator-color: #2a2a2a;
 }
