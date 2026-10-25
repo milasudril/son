@@ -94,10 +94,19 @@ tr.even, tr.markdownTableRowEven{background-color: var(--even-color) !important}
 tr.odd, tr.markdownTableOdd{background-color: var(--odd-color) !important}
 #titlearea{width: 100%; background-color: var(--primary-color-light)}
 #nav-path{width:100%; background-color: var(--analog-color-b-light)}
+.navpath li.navelem a
+{
+	color: var(--analog-color-b-dark) !important;
+}
+#nav-path li.navelem:not(:has(.el))::after
+{
+	background: var(--analog-color-b-mid);
+}
 
 #nav-path ul{width:100%; background-color: var(--analog-color-b-light)}
-.navpath li.footer {
-  color: #000000;
+.navpath li.footer
+{
+	color: #000000;
 }
 #nav-tree .selected, #nav-tree .selected a{color: var(--complement-color-mid) !important}
 #nav-tree .selected::after{background-color: var(--complement-color-mid)}
