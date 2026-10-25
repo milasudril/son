@@ -21,7 +21,7 @@ namespace son
 	};
 
 	template<class StringDecoder>
-	inline string_decode_result decode_quoted_string(StringDecoder& decoder)
+	constexpr string_decode_result decode_quoted_string(StringDecoder& decoder)
 	{
 		auto src_range = decoder.get_input_range();
 		using src_range_type = decltype(src_range);
