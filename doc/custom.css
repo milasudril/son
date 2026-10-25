@@ -25,64 +25,82 @@ html
 	--complement-color-mid: #DF60BD;
 	--complement-color-light: #EFC5E1;
 
-	--warning-note-color-dark: #608000;
-	--warning-note-color-mid: #c0ff00;
-	--warning-note-color-light: #c0ff60;
+	--warning-note-color-dark: #876800;
+	--warning-note-color-mid: #B98F00;
+	--warning-note-color-light: #DFD1BB;
 
-	--prohib-note-color-dark: #800000;
-	--prohib-note-color-mid: #ff0000;
-	--prohib-note-color-light: #c00000;
+	--prohib-note-color-dark: #BE0000;
+	--prohib-note-color-mid: #FF2626;
+	--prohib-note-color-light: #FFBDBD;
 
-	--mandatory-note-color-dark: #000080;
-	--mandatory-note-color-mid: #0000ff;
-	--mandatory-note-color-light: #8080ff;
+	--mandatory-note-color-dark: #007DEB;
+	--mandatory-note-color-mid: #71A4FF;
+	--mandatory-note-color-light: #C8D8FF;
 }
 
 html {
-	--blockquote-background: var(--analog-color-a-light);
-	--blockquote-foreground: var(--primary-color-dark);
+	--blockquote-background: var(--complement-color-light);
+	--blockquote-foreground: #000000;
 	--bug-color: var(--prohib-note-color-mid);
 	--bug-color-dark: var(--prohib-note-color-dark);
 	--bug-color-darker: var(--prohib-note-color-dark);
-	--code-background: var(--analog-color-b-light);
-	--deprecated-color: var(--prohib-note-color-mid);
-	--deprecated-color-dark: var(--prohib-note-color-dark);
+	--code-background: var(--complement-color-light);
+	--deprecated-color: var(--prohib-note-color-light);
+	--deprecated-color-dark: var(--prohib-note-color-mid);
 	--deprecated-color-darker: var(--prohib-note-color-dark);
-	--fragment-background: var(--analog-color-b-dark);
+	--fragment-background: #f8f8f8;
 	--fragment-comment: var(--analog-color-a-mid);
-	--fragment-foreground: var(--complement-color-light);
-	--fragment-keyword: var(--primary-color-light);
-	--fragment-keywordflow: var(--analog-color-b-light);
+	--fragment-foreground: var(--complement-color-dark);
+	--fragment-keyword: var(--primary-color-dark);
+	--fragment-keywordflow: var(--analog-color-b-dark);
 	--fragment-keywordtype: var(--complement-color-mid);
 	--fragment-linenumber-background: var(--analog-color-b-dark);
 	--fragment-linenumber-border: var(--analog-color-a-dark);
 	--fragment-linenumber-color: var(--analog-color-a-mid);
 	--fragment-link: var(--primary-color-light);
 	--fragment-preprocessor: var(--analog-color-b-mid);
-	--fragment-token: var(--complement-color-light);
-	--invariant-color: var(--mandatory-note-color-mid);
-	--invariant-color-dark: var(--mandatory-note-color-dark);
+	--fragment-token: var(--complement-color-dark);
+	--invariant-color: var(--mandatory-note-color-light);
+	--invariant-color-dark: var(--mandatory-note-color-mid);
 	--invariant-color-darker: var(--mandatory-note-color-dark);
 	--note-color: var(--safe-note-color-mid);
 	--note-color-dark: var(--safe-note-color-dark);
 	--note-color-darker: var(--safe-note-color-dark);
 	--on-primary-color: var(--complement-color-light);
-	--page-background-color: var(--complement-color-light);
-	--page-foreground-color: var(--primary-color-dark);
-	--page-secondary-foreground-color: var(--primary-color-mid);
+	--page-background-color: #ffffff;
+	--page-foreground-color: #000000;
+	--page-secondary-foreground-color: var(--primary-color-light);
 	--primary-color: var(--primary-color-mid);
 	--primary-dark-color: var(--primary-color-dark);
 	--primary-light-color: var(--primary-color-light);
-	--separator-color: var(--analog-color-a-light);
-	--side-nav-background: var(--analog-color-b-light);
-	--tablehead-background: var(--analog-color-a-light);
+	--separator-color: #f0f0f0f;
+	--side-nav-background: var(--analog-color-a-light);
+	--side-nav-foreground: var(--complement-color-dark);
+	--tablehead-background: var(--primary-color-light);
 	--todo-color: var(--warning-note-color-mid);
 	--todo-color-dark: var(--warning-note-color-dark);
 	--todo-color-darker: var(--warning-note-color-dark);
 	--warning-color: var(--warning-note-color-mid);
 	--warning-color-dark: var(--warning-note-color-dark);
 	--warning-color-darker: var(--warning-note-color-dark);
+	--even-color: #f0f0f0;
+	--odd-color: #f8f8f8;
+	--nav-text-normal-color: #000000;
+	--nav-breadcrumb-separator-color: #f0f0f0;
 }
+
+
+tr.even, tr.markdownTableRowEven{background-color: var(--even-color) !important}
+tr.odd, tr.markdownTableOdd{background-color: var(--odd-color) !important}
+#titlearea{width: 100%; background-color: var(--primary-color-light)}
+#nav-path{width:100%; background-color: var(--analog-color-b-light)}
+
+#nav-path ul{width:100%; background-color: var(--analog-color-b-light)}
+.navpath li.footer {
+  color: #000000;
+}
+#nav-tree .selected, #nav-tree .selected a{color: var(--complement-color-mid) !important}
+#nav-tree .selected::after{background-color: var(--complement-color-mid)}
 
 /* 3. Automatic System Dark Mode Support */
 @media (prefers-color-scheme: dark) {

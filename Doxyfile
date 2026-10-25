@@ -64,7 +64,7 @@ ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 
 
-FULL_PATH_NAMES        = YES
+FULL_PATH_NAMES        = NO
 
 
 STRIP_FROM_PATH        =
@@ -100,7 +100,7 @@ SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
 
 
-ALIASES                =
+ALIASES                = "startuml=@startuml\n<style file=\"doxygen-awesome-css/doxygen-awesome.css\">\n<style file=\"doxygen-awesome-css/custom.css\">\n"
 
 
 OPTIMIZE_OUTPUT_FOR_C  = NO
@@ -127,7 +127,7 @@ MARKDOWN_SUPPORT       = YES
 MARKDOWN_STRICT        = YES
 
 
-TOC_INCLUDE_HEADINGS   = 5
+TOC_INCLUDE_HEADINGS   = 0
 
 
 MARKDOWN_ID_STYLE      = DOXYGEN
@@ -615,7 +615,7 @@ DISABLE_INDEX          = YES
 GENERATE_TREEVIEW      = YES
 
 
-PAGE_OUTLINE_PANEL     = YES
+PAGE_OUTLINE_PANEL     = NO
 
 
 FULL_SIDEBAR           = NO
@@ -1035,5 +1035,3 @@ MSCGEN_TOOL            =
 
 
 MSCFILE_DIRS           =
-
-ALIASES += "startuml=@startuml\n<style file=\"doxygen-awesome-css/doxygen-awesome.css\">\n<style file=\"doxygen-awesome-css/custom.css\">\n"
