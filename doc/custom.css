@@ -9,60 +9,79 @@ html
 
 :root
 {
-	/* Use for background color of navigation, header, footer, and other boxes */
 	--primary-color-dark: #008B00;
 	--primary-color-mid: #00BE00;
 	--primary-color-light: #BBE1BB;
 
-	/* Use for background (table row alt 1)*/
 	--analog-color-a-dark: #538000;
 	--analog-color-a-mid: #73AF00;
 	--analog-color-a-light: #C9DCBB;
 
-	/* Use for background (table row alt 2)*/
 	--analog-color-b-dark: #0084AC;
 	--analog-color-b-mid: #51B2BB;
 	--analog-color-b-light: #C2DDE0;
 
-	/* Use for link colors and certain highlights*/
 	--complement-color-dark: #B01CBB;
 	--complement-color-mid: #DF60BD;
 	--complement-color-light: #EFC5E1;
+
+	--warning-note-color-dark: #608000;
+	--warning-note-color-mid: #c0ff00;
+	--warning-note-color-light: #c0ff60;
+
+	--prohib-note-color-dark: #800000;
+	--prohib-note-color-mid: #ff0000;
+	--prohib-note-color-light: #c00000;
+
+	--mandatory-note-color-dark: #000080;
+	--mandatory-note-color-mid: #0000ff;
+	--mandatory-note-color-light: #8080ff;
 }
 
 html {
-    /* 2. Core Theme & Page Colors (Light Mode) */
-    --primary-color: var(--primary-color-mid);
-    --primary-dark-color: var(--primary-color-dark);
-    --primary-light-color: var(--primary-color-light);
-
-    --page-background-color: #ffffff;
-    --page-foreground-color: #2b2b2b;
-    --page-secondary-foreground-color: #555555;
-
-    /* Navigation, Header, Footer & Sidebar */
-    --nav-background-color: var(--primary-color-light);
-    --nav-foreground-color: var(--primary-color-dark);
-    --side-nav-background: #f4f8f4;
-
-    /* Code Blocks & Fragments */
-    --fragment-background: #f6f8f6;
-    --fragment-foreground: #2b2b2b;
-
-    /* Links & Highlights */
-    --link-color: var(--complement-color-dark);
-
-    /* Tables */
-    --table-row-background-even: var(--analog-color-a-light);
-    --table-row-background-odd: var(--analog-color-b-light);
-
-    /* Search Bar & Inputs */
-    --search-box-background: #ffffff;
-    --search-box-border-color: var(--primary-color-mid);
-    --search-box-focus-border-color: var(--complement-color-mid);
-
-    /* Admonitions (Notes, Warnings, Tips) */
-    --theme-opt-in-background: var(--analog-color-b-light);
+	--blockquote-background: var(--analog-color-a-light);
+	--blockquote-foreground: var(--primary-color-dark);
+	--bug-color: var(--prohib-note-color-mid);
+	--bug-color-dark: var(--prohib-note-color-dark);
+	--bug-color-darker: var(--prohib-note-color-dark);
+	--code-background: var(--analog-color-b-light);
+	--deprecated-color: var(--prohib-note-color-mid);
+	--deprecated-color-dark: var(--prohib-note-color-dark);
+	--deprecated-color-darker: var(--prohib-note-color-dark);
+	--fragment-background: var(--analog-color-b-dark);
+	--fragment-comment: var(--analog-color-a-mid);
+	--fragment-foreground: var(--complement-color-light);
+	--fragment-keyword: var(--primary-color-light);
+	--fragment-keywordflow: var(--analog-color-b-light);
+	--fragment-keywordtype: var(--complement-color-mid);
+	--fragment-linenumber-background: var(--analog-color-b-dark);
+	--fragment-linenumber-border: var(--analog-color-a-dark);
+	--fragment-linenumber-color: var(--analog-color-a-mid);
+	--fragment-link: var(--primary-color-light);
+	--fragment-preprocessor: var(--analog-color-b-mid);
+	--fragment-token: var(--complement-color-light);
+	--invariant-color: var(--mandatory-note-color-mid);
+	--invariant-color-dark: var(--mandatory-note-color-dark);
+	--invariant-color-darker: var(--mandatory-note-color-dark);
+	--note-color: var(--safe-note-color-mid);
+	--note-color-dark: var(--safe-note-color-dark);
+	--note-color-darker: var(--safe-note-color-dark);
+	--on-primary-color: var(--complement-color-light);
+	--page-background-color: var(--complement-color-light);
+	--page-foreground-color: var(--primary-color-dark);
+	--page-secondary-foreground-color: var(--primary-color-mid);
+	--primary-color: var(--primary-color-mid);
+	--primary-dark-color: var(--primary-color-dark);
+	--primary-light-color: var(--primary-color-light);
+	--separator-color: var(--analog-color-a-light);
+	--side-nav-background: var(--analog-color-b-light);
+	--tablehead-background: var(--analog-color-a-light);
+	--todo-color: var(--warning-note-color-mid);
+	--todo-color-dark: var(--warning-note-color-dark);
+	--todo-color-darker: var(--warning-note-color-dark);
+	--warning-color: var(--warning-note-color-mid);
+	--warning-color-dark: var(--warning-note-color-dark);
+	--warning-color-darker: var(--warning-note-color-dark);
 }
 
 /* 3. Automatic System Dark Mode Support */
