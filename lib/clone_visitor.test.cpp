@@ -102,7 +102,7 @@ TESTCASE(son_clone_visitor_initial_state)
 	auto const& contexts = visitor.contexts();
 	EXPECT_EQ(contexts.size(), 1);
 	auto const& current_ctxt = contexts.back();
-	EXPECT_EQ(current_ctxt.parent_node, false);
+	EXPECT_EQ(current_ctxt.parent_node.is_valid(), false);
 	EXPECT_EQ(current_ctxt.output_value.is_bound_to(output), true);
 }
 

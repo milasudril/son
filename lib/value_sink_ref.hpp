@@ -81,6 +81,7 @@ namespace son
 				m_sink,
 				[]<class SinkWrapper, class SourceValue>(
 					SinkWrapper sink,
+				// NOLINTNEXTLINE: source_val is forwarded
 					SourceValue&& source_val
 				) -> decltype(auto) requires requires(SinkWrapper sink, SourceValue&& source_val){
 					{sink.store_value(std::forward<SourceValue>(source_val))};
@@ -110,7 +111,7 @@ namespace son
 		constexpr bool is_bound_to_same_as(value_sink_ref other) const
 		{ return m_sink == other.m_sink; }
 
-		constexpr operator bool() const
+		constexpr bool is_valid() const
 		{ return std::get_if<value_sink_ref_unset_tag>(&m_sink) == nullptr; }
 
 	private:

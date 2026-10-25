@@ -132,7 +132,7 @@ TESTCASE(son_lookup_result_from_pointer)
 		[result]{
 			std::ignore = result.error_code();
 		},
-		"son internal error: lib/./generic_value.hpp:66: Error code not set in a non-error condition\n",
+		"son internal error: lib/./generic_value.hpp:69: Error code not set in a non-error condition\n",
 		SIGABRT
 	);
 }
@@ -233,7 +233,7 @@ TESTCASE(son_generic_value_get_by_name_not_an_object)
 
 	{
 		auto const stored_val_ptr = val.get_if_by_name<double>("Foobar");
-		EXPECT_EQ(stored_val_ptr, nullptr);
+		EXPECT_EQ(stored_val_ptr.is_valid(), false);
 		EXPECT_EQ(stored_val_ptr.error_code(), son::lookup_error_code::value_not_an_object);
 	}
 
@@ -258,7 +258,7 @@ TESTCASE(son_generic_value_get_by_name_key_not_found)
 
 	{
 		auto const stored_val_ptr = val.get_if_by_name<double>("Foobar");
-		EXPECT_EQ(stored_val_ptr, nullptr);
+		EXPECT_EQ(stored_val_ptr.is_valid(), false);
 		EXPECT_EQ(stored_val_ptr.error_code(), son::lookup_error_code::key_not_found);
 	}
 
@@ -284,7 +284,7 @@ TESTCASE(son_generic_value_get_by_name_wrong_type)
 
 	{
 		auto const stored_val_ptr = val.get_if_by_name<double>("Foobar");
-		EXPECT_EQ(stored_val_ptr, nullptr);
+		EXPECT_EQ(stored_val_ptr.is_valid(), false);
 		EXPECT_EQ(stored_val_ptr.error_code(), son::lookup_error_code::unexpected_type);
 	}
 

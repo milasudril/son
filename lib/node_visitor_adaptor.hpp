@@ -67,7 +67,7 @@ namespace son
 	constexpr auto to_visit_node_result(
 		node_visitor_status result,
 		CompletionCond&& completed = always_true{}
-	) noexcept
+	)
 	{
 		switch(result)
 		{
@@ -316,6 +316,7 @@ namespace son
 		[[gnu::always_inline]] static auto wrap_key(Key&& key)
 		{
 			return std::visit(
+				// NOLINTNEXTLINE: item is forwarded
 				[]<class T>(T&& item){
 					return node_value{
 						key_node<std::remove_cvref_t<T>>::create(std::forward<T>(item))
@@ -385,7 +386,7 @@ namespace son
 		{
 			return to_visit_node_result(
 				m_visitor.handle_simple_array(item, current_context),
-				[&item](){
+				[&item]{
 					return item.at_end();
 				}
 			);
@@ -399,6 +400,7 @@ namespace son
 		{ return to_visit_node_result(m_visitor.handle_key(item, current_context)); }
 
 		template<class T>
+		// NOLINTNEXTLINE: Parenthesis is required
 		requires(is_instantiation_of<std::remove_cvref_t<T>, container_proxy>())
 		visit_node_result dispatch_key(
 			T& item,
@@ -407,7 +409,7 @@ namespace son
 		{
 			return to_visit_node_result(
 				m_visitor.handle_key(item, current_context),
-				[&item](){
+				[&item]{
 					return item.at_end();
 				}
 			);
@@ -421,6 +423,7 @@ namespace son
 		{ return to_visit_node_result(m_visitor.handle_subtype_id(item, current_context)); }
 
 		template<class T>
+		// NOLINTNEXTLINE: Parenthesis is required
 		requires(is_instantiation_of<std::remove_cvref_t<T>, container_proxy>())
 		visit_node_result dispatch_subtype_id(
 			T& item,
@@ -429,7 +432,7 @@ namespace son
 		{
 			return to_visit_node_result(
 				m_visitor.handle_subtype_id(item, current_context),
-				[&item](){
+				[&item]{
 					return item.at_end();
 				}
 			);
@@ -522,6 +525,7 @@ namespace son
 		)
 		{
 			std::visit(
+				// NOLINTNEXTLINE: item is forwarded
 				[&nodes, &next_context]<class T>(T&& item) {
 					push_value(std::forward<T>(item), next_context, nodes);
 				},

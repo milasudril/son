@@ -44,11 +44,14 @@ namespace son
 			m_err_code{}
 		{}
 
-		constexpr operator RetType*() const
-		{ return m_value;}
+		constexpr auto& operator*() const
+		{ return *m_value;}
 
 		constexpr RetType* operator->() const
 		{ return m_value; }
+
+		constexpr bool is_valid() const
+		{ return m_value != nullptr; }
 
 		template<class KeyLike>
 		constexpr RetType& value(KeyLike const& key) const
@@ -137,7 +140,8 @@ namespace son
 		~generic_value()
 		{ clear(); }
 
-		void clear()
+		// NOLINTNEXTLINE: std::terminate is acceptable if clear throws
+		void clear() noexcept
 		{
 			node_visitor visitor{*this, clear_nodes_visitor{}};
 			visitor.visit_nodes();
@@ -179,6 +183,7 @@ namespace son
 			if(item == nullptr)
 			{ return ret_type{lookup_error_code::value_not_an_object}; }
 
+			// NOLINTNEXTLINE: Not necessary an array
 			auto const i = item->find(key);
 			if(i == std::end(*item))
 			{ return ret_type{lookup_error_code::key_not_found}; }
@@ -192,7 +197,10 @@ namespace son
 
 		template<class T, class Self, class KeyLike>
 		auto&& get_by_name(this Self&& self, KeyLike const& key)
-		{ return std::forward_like<Self>(std::forward<Self>(self).template get_if_by_name<T>(key).value(key)); }
+		{
+			return std::forward_like<Self>(std::forward<Self>(self)
+				.template get_if_by_name<T>(key).value(key));
+		}
 
 		template<class Value>
 		struct insert_result
@@ -251,6 +259,7 @@ namespace son
 		{
 			auto res = self.try_store_value_as(std::forward<T>(value), std::forward<KeyLike>(key));
 			if(res.key == nullptr)
+			// NOLINTNEXTLINE: try_store_value_as will not touch key if it fails in this way.
 			{ throw exception{"Failed to insert `{}` into a non-object", std::forward<KeyLike>(key)}; }
 
 			if(!res.was_inserted)
@@ -283,6 +292,7 @@ namespace son
 		{
 			auto const res = self.try_store_key_value(std::forward<Item>(item));
 			if(res.key == nullptr)
+			// NOLINTNEXTLINE: try_store_key_value will not touch key if it fails in this way.
 			{ throw exception{"Failed to insert `{}` into a non-object", item.first}; }
 
 			if(!res.was_inserted)
@@ -351,6 +361,7 @@ namespace son
 		{
 			auto ret = self.try_store_at_end(std::forward<T>(value));
 			if(ret == nullptr)
+			// NOLINTNEXTLINE: try_store_at_end will not touch key if it fails in this way.
 			{ throw exception{"Cannot append `{}` to a non-array", std::forward<T>(value)}; }
 			return *ret;
 		}

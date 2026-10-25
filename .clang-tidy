@@ -11,7 +11,8 @@ ImplementationFileExtensions:
   - cc
   - cpp
   - cxx
-HeaderFilterRegex: '/usr/lib/gcc/x86_64-linux-gnu/.*'
+HeaderFilterRegex: '.*'
+ExcludeHeaderFilterRegex: '.*testfwk/.*'
 FormatStyle:     none
 CheckOptions:
   cert-dcl16-c.NewSuffixes: 'L;LL;LU;LLU'

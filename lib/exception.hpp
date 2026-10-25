@@ -47,11 +47,12 @@ namespace son
 	 * \brief Function called when an unrecoverable error is detected within son
 	 */
 	template<class... Args>
+	// NOLINTNEXTLINE: std::terminate is acceptable
 	[[noreturn]] [[gnu::cold]] void raise_internal_error(
 		std::format_string<std::remove_cvref_t<Args> const&...> fmt,
 		std::tuple<Args...> const& args = std::tuple{},
 		std::source_location loc = std::source_location::current()
-	)
+	) noexcept
 	{
 		auto msg = std::apply(
 			[fmt](std::remove_cvref_t<Args> const&... args) {
@@ -75,7 +76,7 @@ namespace son
 	 * \brief Helper function to pack args into a tuple so they can be passed to raise_internal_error
 	 */
 	template<class... Args>
-	inline constexpr std::tuple<Args...> make_fmt_args(Args&&... args)
+	constexpr std::tuple<Args...> make_fmt_args(Args&&... args) noexcept
 	{ return std::tuple<Args&&...>(std::forward<Args>(args)...); }
 }
 

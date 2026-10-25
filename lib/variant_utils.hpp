@@ -49,7 +49,7 @@ namespace son
 		{
 			using type = std::variant_alternative_t<Index, VariantType>;
 			using type_tag =  variant_element_tag<type>;
-			vtable[Index] = [](Callable f, Args... args) -> decltype(auto) {
+			vtable.at(Index) = [](Callable f, Args... args) -> decltype(auto) {
 				return f(type_tag{}, args...);
 			};
 			return fill_visit_variant_element_vtable<Index + 1, VariantType, Callable, Args...>(vtable);
@@ -83,7 +83,7 @@ namespace son
 		if(index >= std::size(vtable))
 		{ throw exception{"Bad variant index"}; }
 
-		return vtable[index](std::forward<Callable>(cb), std::forward<Args>(args)...);
+		return vtable.at(index)(std::forward<Callable>(cb), std::forward<Args>(args)...);
 	}
 
 	template<class VariantType, class... TypesToAppend>
@@ -114,7 +114,7 @@ namespace son
 	{
 	private:
 		template<size_t... I>
-		static consteval auto resolve_type(std::index_sequence<I...>)
+		static consteval auto resolve_type(std::index_sequence<I...> /*unused*/)
 		{
 			using next_type = append_to_variant_t<
 				VariantA,
@@ -226,6 +226,7 @@ namespace son
 	constexpr decltype(auto) visit_with_args(Variant&& to_visit, Visitor&& visitor, VisitorArgs&&... args)
 	{
 		return std::visit(
+			// NOLINTNEXTLINE: item is forwarded
 			[&]<class T>(T&& item) -> decltype(auto) {
 				return std::forward<Visitor>(visitor)(std::forward<T>(item), std::forward<VisitorArgs>(args)...);
 			},
@@ -281,6 +282,7 @@ namespace son
 		>;
 
 		return std::visit(
+			// NOLINTNEXTLINE: item is forwarded
 			[&]<class T>(T&& item) -> ret_type {
 				if constexpr (is_invokable_with_result<ret_type, Visitor, T, VisitorArgs...>())
 				{
