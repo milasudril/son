@@ -35,7 +35,11 @@ namespace
 TESTCASE(son_stringconv_empty_returns_more_data_needed)
 {
 	test_string_decoder decoder;
-	decoder.get_input_range.expect_call_with_action([](){return std::string_view{}; });
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{};
+		}
+	);
 	decoder.set_input_range.expect_call_with_action(
 		[](std::string_view str){
 			EXPECT_EQ(str.empty(), true);
@@ -49,12 +53,12 @@ TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"\\"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_normal;
 		}
 	);
@@ -76,12 +80,12 @@ TESTCASE(son_stringconv_state_string_normal_handle_end_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"\"stuff after string"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_normal;
 		}
 	);
@@ -98,12 +102,12 @@ TESTCASE(son_stringconv_state_string_normal_other_char_invalid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"Some data"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_normal;
 		}
 	);
@@ -124,12 +128,12 @@ TESTCASE(son_stringconv_state_string_normal_other_char_valid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"Some data"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_normal;
 		},
 		TestFwk::expectation_options{
@@ -160,12 +164,12 @@ TESTCASE(son_stringconv_state_string_escape_codepoint_begin_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"u"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_escape;
 		}
 	);
@@ -187,12 +191,12 @@ TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"Some data"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_escape;
 		}
 	);
@@ -213,12 +217,12 @@ TESTCASE(son_stringconv_state_string_escape_other_char_valid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"n"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::string_escape;
 		}
 	);
@@ -246,12 +250,12 @@ TESTCASE(son_stringconv_state_decode_codepoint_done)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"F"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::decode_codepoint;
 		}
 	);
@@ -279,12 +283,12 @@ TESTCASE(son_stringconv_state_decode_codepoint_illegal_char_in_string)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"Some data"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::decode_codepoint;
 		}
 	);
@@ -307,12 +311,12 @@ TESTCASE(son_stringconv_state_decode_codepoint_invalid_input)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
-		[](){
+		[]{
 			return std::string_view{"Some data"};
 		}
 	);
 	decoder.get_state.expect_call_with_action(
-		[](){
+		[]{
 			return test_string_decoder::state::decode_codepoint;
 		}
 	);
