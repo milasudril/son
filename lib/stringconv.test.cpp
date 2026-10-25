@@ -334,3 +334,134 @@ TESTCASE(son_stringconv_state_decode_codepoint_invalid_input)
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(result, son::string_decode_result::invalid_escape_sequence);
 }
+
+TESTCASE(son_stringconv_state_decode_codepoint_second_surrogate_element_required)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"F"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::decode_codepoint;
+		}
+	);
+	decoder.accept_codepoint_hexdigit.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, 'F');
+			return son::accept_codepoint_hexdigit_result::second_surrogate_element_required;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](test_string_decoder::state new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::before_second_surrogate_element_escseq);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_string_escape_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"\\"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::before_second_surrogate_element_escseq;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](test_string_decoder::state new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::at_second_surrogate_element_escseq);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_other)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::before_second_surrogate_element_escseq;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "Some data");
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::illformed_escaped_utf16_surrogate_pair);
+}
+
+TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_codepoint_begin_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"u"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::at_second_surrogate_element_escseq;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](test_string_decoder::state new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::decode_codepoint);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_other)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::at_second_surrogate_element_escseq;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "Some data");
+		}
+	);
+	auto const result = son::decode_quoted_string(decoder);
+	EXPECT_EQ(result, son::string_decode_result::illformed_escaped_utf16_surrogate_pair);
+}
