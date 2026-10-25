@@ -8,21 +8,21 @@ span.mlabel{font-size: 0.85em !important}
 
 :root
 {
-	--primary-color-dark: #008B00;
-	--primary-color-mid: #00BE00;
-	--primary-color-light: #BBE1BB;
+	--analog-color-a-dark: #AC4000;
+	--analog-color-a-mid: #E85E19;
+	--analog-color-a-light: #F4C4BC;
 
-	--analog-color-a-dark: #538000;
-	--analog-color-a-mid: #73AF00;
-	--analog-color-a-light: #C9DCBB;
+	--primary-color-dark: #975A00;
+	--primary-color-mid: #CF7D00;
+	--primary-color-light: #E8CCBB;
 
-	--analog-color-b-dark: #0084AC;
-	--analog-color-b-mid: #51B2BB;
-	--analog-color-b-light: #C2DDE0;
+	--analog-color-b-dark: #876800;
+	--analog-color-b-mid: #B98F00;
+	--analog-color-b-light: #DFD1BB;
 
-	--complement-color-dark: #B01CBB;
-	--complement-color-mid: #DF60BD;
-	--complement-color-light: #EFC5E1;
+	--complement-color-dark: #007DEB;
+	--complement-color-mid: #71A4FF;
+	--complement-color-light: #C8D8FF;
 
 	--warning-note-color-dark: #876800;
 	--warning-note-color-mid: #B98F00;
