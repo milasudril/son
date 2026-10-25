@@ -559,6 +559,7 @@ namespace son
 		}
 
 	private:
+		// NOLINTNEXTLINE: Reference is acceptable if template parameter NodeVisitor is a reference
 		NodeVisitor m_visitor;
 	};
 
