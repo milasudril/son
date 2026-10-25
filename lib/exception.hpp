@@ -12,6 +12,11 @@ extern "C"
 }
 #endif
 
+/**
+ * \defgroup eh Error handling
+ * \brief Contains classes and functions for error handling
+ */
+
 namespace son
 {
 #ifdef COVERAGE_BUILD
@@ -27,6 +32,7 @@ namespace son
 
 	/**
 	 * \brief Class used for exception raised by son
+	 * \ingroup eh
 	 */
 	class exception:public std::exception
 	{
@@ -45,6 +51,8 @@ namespace son
 
 	/**
 	 * \brief Function called when an unrecoverable error is detected within son
+	 * \ingroup eh
+	 * This function writes an error message to stderr, and terminates the process
 	 */
 	template<class... Args>
 	// NOLINTNEXTLINE: std::terminate is acceptable
@@ -74,6 +82,7 @@ namespace son
 
 	/**
 	 * \brief Helper function to pack args into a tuple so they can be passed to raise_internal_error
+	 * \ingroup eh
 	 */
 	template<class... Args>
 	constexpr std::tuple<Args...> make_fmt_args(Args&&... args) noexcept

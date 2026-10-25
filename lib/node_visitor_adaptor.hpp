@@ -11,18 +11,41 @@
 #include <vector>
 #include <format>
 
+/**
+ * \defgroup node_visitation Node visitation support
+ * \brief Contains classes and functions for use with non-recursive node visitation
+ */
+
 namespace son
 {
+	/**
+	 * \brief Holds information about where in the tree the current node is
+	 * \ingroup node_visitation
+	 */
 	struct value_visitation_context
 	{
 		constexpr bool operator==(value_visitation_context const&) const = default;
 		constexpr bool operator!=(value_visitation_context const&) const = default;
 
+		/**
+		 * \brief Checks whether or not this nod is the last node within its parent
+		 */
 		constexpr bool is_last_node() const
 		{ return node_index + 1 == parent_container_size; }
 
+		/**
+		 * \brief The index of current node in its parent
+		 */
 		size_t node_index{};
+
+		/**
+		 * \brief The number children the parent node has
+		 */
 		size_t parent_container_size{1};
+
+		/**
+		 * \brief The depth at which the current node sits
+		 */
 		size_t depth{};
 	};
 
