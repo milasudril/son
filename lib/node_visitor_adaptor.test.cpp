@@ -200,7 +200,7 @@ TESTCASE(son_to_visit_node_result_junk_leads_to_sigabrt)
 				completed_mock
 			);
 		},
-		"son internal error: lib/./node_visitor_adaptor.hpp:83: Invalid return value from node visitor\n",
+		"son internal error: lib/./node_visitor_adaptor.hpp:106: Invalid return value from node visitor\n",
 		SIGABRT
 	);
 }
