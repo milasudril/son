@@ -5,37 +5,103 @@
 
 /**
  * \defgroup stringconv String conversion utilities
+ * \brief Contains classes and functions for decoding and encoding strings
  */
 
 namespace son
 {
 	/**
+	 * \brief The result of a string decode operation
 	 * \ingroup stringconv
 	 */
 	enum class string_decode_result
 	{
+		/**
+		 * \brief The operation was completed without errors
+		 */
 		done,
+
+		/**
+		 * \brief A character in the input buffer was not accepted
+		 */
 		illegal_char_in_string,
+
+		/**
+		 * \brief An invalid escape sequence appeared in the input buffer
+		 */
 		invalid_escape_sequence,
+
+		/**
+		 * \brief An invalid escape sequence appeared in the input buffer
+		 */
 		more_data_needed,
+
+		/**
+		 * \brief An invalid UTF-16 surrogate pair appeared in the input buffer
+		 */
 		illformed_escaped_utf16_surrogate_pair
 	};
 
 	/**
+	 * \brief The result of decoding an escape sequence representing a Unicode codepoint
 	 * \ingroup stringconv
 	 */
 	enum class accept_codepoint_hexdigit_result
 	{
+		/**
+		 * \brief The operation was completed without errors
+		 */
 		done,
+
+		/**
+		 * \brief The decoded escape sequence resulted in an illegal character
+		 */
 		illegal_char_in_string,
+
+		/**
+		 * \brief A character in the input buffer was not accepted (not an hexdigit)
+		 */
 		invalid_input,
+
+		/**
+		 * \brief A surrogate pair was detected and a second escape sequence is required
+		 */
 		second_surrogate_element_required
+	};
+
+	/**
+	 * \brief Requirements on a class that can manage the state during the decoding of a string
+	 * \ingroup stringconv
+	 */
+	template<class T>
+	concept string_decoder = requires(T& decoder, char ch_in)
+	{
+		/**
+		 * \brief The character used to start an escape sequence, typically `\`
+		 */
+		{T::string_escape_char} -> std::same_as<char const&>;
+
+		/**
+		 * \brief The character used to end a string, typically `"`
+		 */
+		{T::string_end_char} -> std::same_as<char const&>;
+
+		/**
+		 * \brief Should store `ch_in` in an internal buffer, if it is accepted
+		 * \return true if `ch_in` was accepted, otherwise `false`
+		 */
+		{decoder.accept_char(ch_in)} -> std::same_as<bool>;
+
+		/**
+		 * \brief Updates the state of the decoder
+		 */
+		{decoder.set_state(std::declval<typename T::state>())} -> std::same_as<void>;
 	};
 
 	/**
 	 * \ingroup stringconv
 	 */
-	template<class StringDecoder>
+	template<string_decoder StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_normal(
 		StringDecoder& decoder,
 		char ch_in
