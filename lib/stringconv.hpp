@@ -3,8 +3,15 @@
 
 #include <optional>
 
+/**
+ * \defgroup stringconv String conversion utilities
+ */
+
 namespace son
 {
+	/**
+	 * \ingroup stringconv
+	 */
 	enum class string_decode_result
 	{
 		done,
@@ -14,6 +21,9 @@ namespace son
 		illformed_escaped_utf16_surrogate_pair
 	};
 
+	/**
+	 * \ingroup stringconv
+	 */
 	enum class accept_codepoint_hexdigit_result
 	{
 		done,
@@ -22,6 +32,9 @@ namespace son
 		second_surrogate_element_required
 	};
 
+	/**
+	 * \ingroup stringconv
+	 */
 	template<class StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_normal(
 		StringDecoder& decoder,
@@ -45,6 +58,9 @@ namespace son
 		}
 	}
 
+	/**
+	 * \ingroup stringconv
+	 */
 	template<class StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_string_escape(
 		StringDecoder& decoder,
@@ -67,6 +83,9 @@ namespace son
 		}
 	}
 
+	/**
+	 * \ingroup stringconv
+	 */
 	template<class StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_decode_codepoint(
 		StringDecoder& decoder,
@@ -93,6 +112,9 @@ namespace son
 		return std::nullopt;
 	}
 
+	/**
+	 * \ingroup stringconv
+	 */
 	template<class StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_before_second_surrogate_element_escseq(
 			StringDecoder& decoder,
@@ -111,6 +133,9 @@ namespace son
 		}
 	}
 
+	/**
+	 * \ingroup stringconv
+	 */
 	template<class StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_at_second_surrogate_element_escseq(
 		StringDecoder& decoder,
@@ -129,6 +154,9 @@ namespace son
 		}
 	}
 
+	/**
+	 * \ingroup stringconv
+	 */
 	template<class StringDecoder>
 	constexpr string_decode_result decode_quoted_string(StringDecoder& decoder)
 	{
