@@ -99,6 +99,20 @@ namespace son
 	};
 
 	/**
+	 * \brief Handles the `normal` state when decoding a quoted string
+	 *
+	 * When:
+	 *
+	 * * `ch_in` equals StringDecoder::string_escape_char (as described in string_decoder), the
+	 * decoder state is moved to `string_escape`, and no result is returned.
+	 *
+	 * * `ch_in` equals StringDecoder::string_end_char (as described in string_decoder), the decoder
+	 * state is kept, and the function returns string_decode_result::done
+	 *
+	 * * In any other case, decoder is asked to `accept_char` (as described in string_decoder). If
+	 * decoder accepts `ch_in`, no result is returned, otherwise the return value is
+	 * string_decode_result::illegal_char_in_string. In any case, the decoder state is not updated.
+	 *
 	 * \ingroup stringconv
 	 */
 	template<string_decoder StringDecoder>
