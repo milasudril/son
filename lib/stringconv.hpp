@@ -87,6 +87,11 @@ namespace son
 		{T::string_end_char} -> std::same_as<char const&>;
 
 		/**
+		 * \brief The character used to start a codepoint, typically `u`
+		 */
+		{T::codepoint_begin_char} -> std::same_as<char const&>;
+
+		/**
 		 * \brief Should store `ch_in` in an internal buffer, if it is accepted
 		 * \return true if `ch_in` was accepted, otherwise `false`
 		 */
@@ -104,6 +109,17 @@ namespace son
 		 * \brief Updates the state of the decoder
 		 */
 		{decoder.set_state(std::declval<typename T::state>())} -> std::same_as<void>;
+
+		/** \name stringdec_state
+		 *  The different state decoder can be in
+		 */
+		///@{
+		{T::state::string_escape} -> std::same_as<typename T::state>;
+		{T::state::decode_codepoint} -> std::same_as<typename T::state>;
+		{T::state::string_normal} -> std::same_as<typename T::state>;
+		{T::state::before_second_surrogate_element_escseq} -> std::same_as<typename T::state>;
+		{T::state::at_second_surrogate_element_escseq} -> std::same_as<typename T::state>;
+		///@}
 	};
 
 	/**
