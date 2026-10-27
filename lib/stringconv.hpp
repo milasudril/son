@@ -93,6 +93,14 @@ namespace son
 		{decoder.accept_char(ch_in)} -> std::same_as<bool>;
 
 		/**
+		 * \brief Should map `ch_in` to the character that corresponds to this particular escape
+		 *        character, and store the result in an internal buffer
+		 *
+		 * \return true if `ch_in` was accepted, otherwise `false`
+		 */
+		{decoder.accept_escape_char(ch_in)} -> std::same_as<bool>;
+
+		/**
 		 * \brief Updates the state of the decoder
 		 */
 		{decoder.set_state(std::declval<typename T::state>())} -> std::same_as<void>;
@@ -104,7 +112,7 @@ namespace son
 	 * When:
 	 *
 	 * * `ch_in` equals StringDecoder::string_escape_char (as described in string_decoder), the
-	 * decoder state is moved to `string_escape`, and no result is returned.
+	 * decoder state is moved to `string_escape`, and no result is returned
 	 *
 	 * * `ch_in` equals StringDecoder::string_end_char (as described in string_decoder), the decoder
 	 * state is kept, and the function returns string_decode_result::done
@@ -139,6 +147,17 @@ namespace son
 	}
 
 	/**
+	 * \brief  Handles the `string_escape` state when decoding a quoted string
+	 *
+	 * When:
+	 *
+	 * * `ch_in` equals StringDecoder::codepoint_begin_char (as described in string_decoder), the
+	 * decoder state is moved to `decode_codepoint`, and no result is returned
+	 *
+	 * * Otherwise, decoder is asked to `accept_escape_char` (as described in string_decoder). If
+	 * decoder accepts `ch_in`, decoder state is updated to `string_normal` and there is no return
+	 * value. If it was not accepted, string_decode_result::illegal_char_in_string is returned.
+	 *
 	 * \ingroup stringconv
 	 */
 	template<class StringDecoder>
