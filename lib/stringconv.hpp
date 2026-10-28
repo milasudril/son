@@ -220,7 +220,7 @@ namespace son
 	 *
 	 * \ingroup stringconv
 	 */
-	template<class StringDecoder>
+	template<string_decoder StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_decode_codepoint(
 		StringDecoder& decoder,
 		char ch_in
@@ -247,9 +247,18 @@ namespace son
 	}
 
 	/**
+	 * \brief Handles the `before_second_surrogate_element_escseq` state when decoding a quoted string
+	 *
+	 * When
+	 *
+	 * * `ch_in` equals `string_escape_char` (as described in string_decoder), the decoder state is
+	 * updated to `at_second_surrogate_element_escseq` and  the function returns nothing
+	 *
+	 * * Otherwise string_decode_result::illformed_escaped_utf16_surrogate_pair is returned
+	 *
 	 * \ingroup stringconv
 	 */
-	template<class StringDecoder>
+	template<string_decoder StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_before_second_surrogate_element_escseq(
 			StringDecoder& decoder,
 			char ch_in
@@ -268,6 +277,15 @@ namespace son
 	}
 
 	/**
+	 * \brief Handles the `at_second_surrogate_element_escseq` state when decoding a quoted string
+	 *
+	 * When
+	 *
+	 * * `ch_in`  equals `codepoint_begin_char` (as described in string_decoder), the decoder state is
+	 * updated to `decode_codepoint` and the function returns nothing
+	 *
+	 * * Otherwise, the function returns string_decode_result::illformed_escaped_utf16_surrogate_pair
+	 *
 	 * \ingroup stringconv
 	 */
 	template<class StringDecoder>
