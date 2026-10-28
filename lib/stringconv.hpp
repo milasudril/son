@@ -125,10 +125,10 @@ namespace son
 	/**
 	 * \brief Handles the `normal` state when decoding a quoted string
 	 *
-	 * When:
+	 * When
 	 *
 	 * * `ch_in` equals StringDecoder::string_escape_char (as described in string_decoder), the
-	 * decoder state is moved to `string_escape`, and no result is returned
+	 * decoder state is updated to `string_escape`, and no result is returned
 	 *
 	 * * `ch_in` equals StringDecoder::string_end_char (as described in string_decoder), the decoder
 	 * state is kept, and the function returns string_decode_result::done
@@ -165,10 +165,10 @@ namespace son
 	/**
 	 * \brief  Handles the `string_escape` state when decoding a quoted string
 	 *
-	 * When:
+	 * When
 	 *
 	 * * `ch_in` equals StringDecoder::codepoint_begin_char (as described in string_decoder), the
-	 * decoder state is moved to `decode_codepoint`, and no result is returned
+	 * decoder state is updated to `decode_codepoint`, and no result is returned
 	 *
 	 * * Otherwise, decoder is asked to `accept_escape_char` (as described in string_decoder). If
 	 * decoder accepts `ch_in`, decoder state is updated to `string_normal` and there is no return
@@ -176,7 +176,7 @@ namespace son
 	 *
 	 * \ingroup stringconv
 	 */
-	template<class StringDecoder>
+	template<string_decoder StringDecoder>
 	constexpr std::optional<string_decode_result> decode_quoted_string_state_string_escape(
 		StringDecoder& decoder,
 		char ch_in
@@ -199,6 +199,23 @@ namespace son
 	}
 
 	/**
+	 * \brief  Handles the `decode_codepoint` state when decoding a quoted string
+	 *
+	 * This function will call accept_codepoint_hexdigit (see string_decoder) on decoder, when the
+	 * result is
+	 *
+	 * * accept_codepoint_hexdigit_result::done, the decoder state is updated to `string_normal`,
+	 * and the function returns nothing
+	 *
+	 * * accept_codepoint_hexdigit_result::illegal_char_in_string, the function returns
+	 * string_decode_result::illegal_char_in_string
+	 *
+	 * * accept_codepoint_hexdigit_result::invalid_input, the function returns
+	 * string_decode_result::invalid_escape_sequence
+	 *
+	 * * accept_codepoint_hexdigit_result::second_surrogate_element_required, the decoder state is
+	 * updated to `before_second_surrogate_element_escseq` and the function returns nothing
+	 *
 	 * \ingroup stringconv
 	 */
 	template<class StringDecoder>
