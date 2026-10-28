@@ -1,6 +1,7 @@
 //@	{"target":{"name":"stringconv.test"}}
 
 #include "./stringconv.hpp"
+#include "testfwk/death_test.hpp"
 
 #include <testfwk/testfwk.hpp>
 #include <testfwk/mock_util.hpp>
@@ -366,6 +367,48 @@ TESTCASE(son_stringconv_state_decode_codepoint_second_surrogate_element_required
 	);
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+}
+
+TESTCASE(son_stringconv_state_decode_codepoint_wrong_return_value)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"F"};
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::decode_codepoint;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
+		}
+	);
+	decoder.accept_codepoint_hexdigit.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, 'F');
+			// NOLINTNEXTLINE
+			return static_cast<son::accept_codepoint_hexdigit_result>(345);
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
+		}
+	);
+
+	TestFwk::expect_death(
+		[&decoder](){
+			std::ignore = son::decode_quoted_string(decoder);
+		},
+		"son internal error: lib/./stringconv.hpp:246: Unexpected return value from accept_codepoint_hexdigit\n",
+		SIGABRT
+	);
 }
 
 TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_string_escape_char)

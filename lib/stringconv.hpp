@@ -1,6 +1,8 @@
 #ifndef SON_STRINGCONV_HPP
 #define SON_STRINGCONV_HPP
 
+#include "./exception.hpp"
+
 #include <optional>
 
 /**
@@ -241,7 +243,7 @@ namespace son
 				decoder.set_state(decoder_state::before_second_surrogate_element_escseq);
 				return std::nullopt;
 		}
-		return std::nullopt;
+		raise_internal_error("Unexpected return value from accept_codepoint_hexdigit");
 	}
 
 	/**
