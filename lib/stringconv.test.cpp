@@ -24,7 +24,7 @@ namespace
 		TestFwk::mock_entry<state()> get_state;
 		TestFwk::mock_entry<void(state)> set_state;
 		TestFwk::mock_entry<bool(char)> accept_char;
-		TestFwk::mock_entry<bool(char)> accept_escape_char;
+		TestFwk::mock_entry<bool(char)> accept_escape_code;
 		TestFwk::mock_entry<son::accept_codepoint_hexdigit_result(char)> accept_codepoint_hexdigit;
 
 		static constexpr auto string_escape_char = '\\';
@@ -201,7 +201,7 @@ TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
 			return test_string_decoder::state::string_escape;
 		}
 	);
-	decoder.accept_escape_char.expect_call_with_action([](char ch_in){
+	decoder.accept_escape_code.expect_call_with_action([](char ch_in){
 		EXPECT_EQ(ch_in, 'S');
 		return false;
 	});
@@ -227,7 +227,7 @@ TESTCASE(son_stringconv_state_string_escape_other_char_valid)
 			return test_string_decoder::state::string_escape;
 		}
 	);
-	decoder.accept_escape_char.expect_call_with_action(
+	decoder.accept_escape_code.expect_call_with_action(
 		[](char ch_in){
 			EXPECT_EQ(ch_in, 'n');
 			return true;

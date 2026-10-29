@@ -101,11 +101,11 @@ namespace son
 
 		/**
 		 * \brief Should map `ch_in` to the character that corresponds to this particular escape
-		 *        character, and store the result in an internal buffer
+		 *        code, and store the result in an internal buffer
 		 *
 		 * \return true if `ch_in` was accepted, otherwise `false`
 		 */
-		{decoder.accept_escape_char(ch_in)} -> std::same_as<bool>;
+		{decoder.accept_escape_code(ch_in)} -> std::same_as<bool>;
 
 		/**
 		 * \brief Updates the state of the decoder
@@ -172,7 +172,7 @@ namespace son
 	 * * `ch_in` equals StringDecoder::codepoint_begin_char (as described in string_decoder), the
 	 * decoder state is updated to `decode_codepoint`, and no result is returned
 	 *
-	 * * Otherwise, decoder is asked to `accept_escape_char` (as described in string_decoder). If
+	 * * Otherwise, decoder is asked to `accept_escape_code` (as described in string_decoder). If
 	 * decoder accepts `ch_in`, decoder state is updated to `string_normal` and there is no return
 	 * value. If it was not accepted, string_decode_result::illegal_char_in_string is returned.
 	 *
@@ -192,7 +192,7 @@ namespace son
 				return std::nullopt;
 
 			default:
-				if(!decoder.accept_escape_char(ch_in))
+				if(!decoder.accept_escape_code(ch_in))
 				{ return string_decode_result::illegal_char_in_string; }
 
 				decoder.set_state(decoder_state::string_normal);
