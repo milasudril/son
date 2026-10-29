@@ -29,7 +29,7 @@ namespace
 		TestFwk::mock_entry<son::accept_codepoint_hexdigit_result(char)> accept_codepoint_hexdigit;
 
 		static constexpr auto string_escape_char = '\\';
-		static constexpr auto string_end_char = '\"';
+		static constexpr auto quoted_string_end_char = '\"';
 		static constexpr auto codepoint_begin_char = 'u';
 	};
 }

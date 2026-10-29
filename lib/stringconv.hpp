@@ -76,7 +76,7 @@ namespace son
 	 * \ingroup stringconv
 	 */
 	template<class T>
-	concept string_decoder = requires(T& decoder, char ch_in)
+	concept quoted_string_decoder = requires(T& decoder, char ch_in)
 	{
 		/**
 		 * \brief The character used to start an escape sequence, typically `\`
@@ -86,7 +86,7 @@ namespace son
 		/**
 		 * \brief The character used to end a string, typically `"`
 		 */
-		{T::string_end_char} -> std::same_as<char const&>;
+		{T::quoted_string_end_char} -> std::same_as<char const&>;
 
 		/**
 		 * \brief The character used to start a codepoint, typically `u`
@@ -129,19 +129,19 @@ namespace son
 	 *
 	 * When
 	 *
-	 * * `ch_in` equals StringDecoder::string_escape_char (as described in string_decoder), the
+	 * * `ch_in` equals StringDecoder::string_escape_char (as described in quoted_string_decoder), the
 	 * decoder state is updated to `string_escape`, and no result is returned
 	 *
-	 * * `ch_in` equals StringDecoder::string_end_char (as described in string_decoder), the decoder
+	 * * `ch_in` equals StringDecoder::quoted_string_end_char (as described in quoted_string_decoder), the decoder
 	 * state is kept, and the function returns quoted_string_decode_result::done
 	 *
-	 * * In any other case, decoder is asked to `accept_char` (as described in string_decoder). If
+	 * * In any other case, decoder is asked to `accept_char` (as described in quoted_string_decoder). If
 	 * decoder accepts `ch_in`, no result is returned, otherwise the return value is
 	 * quoted_string_decode_result::illegal_char_in_string. In any case, the decoder state is not updated.
 	 *
 	 * \ingroup stringconv
 	 */
-	template<string_decoder StringDecoder>
+	template<quoted_string_decoder StringDecoder>
 	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_normal(
 		StringDecoder& decoder,
 		char ch_in
@@ -154,7 +154,7 @@ namespace son
 				decoder.set_state(decoder_state::string_escape);
 				return std::nullopt;
 
-			case StringDecoder::string_end_char:
+			case StringDecoder::quoted_string_end_char:
 				return quoted_string_decode_result::done;
 
 			default:
@@ -169,16 +169,16 @@ namespace son
 	 *
 	 * When
 	 *
-	 * * `ch_in` equals StringDecoder::codepoint_begin_char (as described in string_decoder), the
+	 * * `ch_in` equals StringDecoder::codepoint_begin_char (as described in quoted_string_decoder), the
 	 * decoder state is updated to `decode_codepoint`, and no result is returned
 	 *
-	 * * Otherwise, decoder is asked to `accept_escape_code` (as described in string_decoder). If
+	 * * Otherwise, decoder is asked to `accept_escape_code` (as described in quoted_string_decoder). If
 	 * decoder accepts `ch_in`, decoder state is updated to `string_normal` and there is no return
 	 * value. If it was not accepted, quoted_string_decode_result::illegal_char_in_string is returned.
 	 *
 	 * \ingroup stringconv
 	 */
-	template<string_decoder StringDecoder>
+	template<quoted_string_decoder StringDecoder>
 	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_string_escape(
 		StringDecoder& decoder,
 		char ch_in
@@ -203,7 +203,7 @@ namespace son
 	/**
 	 * \brief  Handles the `decode_codepoint` state when decoding a quoted string
 	 *
-	 * This function will call accept_codepoint_hexdigit (see string_decoder) on decoder, when the
+	 * This function will call accept_codepoint_hexdigit (see quoted_string_decoder) on decoder, when the
 	 * result is
 	 *
 	 * * accept_codepoint_hexdigit_result::done, the decoder state is updated to `string_normal`,
@@ -220,7 +220,7 @@ namespace son
 	 *
 	 * \ingroup stringconv
 	 */
-	template<string_decoder StringDecoder>
+	template<quoted_string_decoder StringDecoder>
 	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_decode_codepoint(
 		StringDecoder& decoder,
 		char ch_in
@@ -251,14 +251,14 @@ namespace son
 	 *
 	 * When
 	 *
-	 * * `ch_in` equals `string_escape_char` (as described in string_decoder), the decoder state is
+	 * * `ch_in` equals `string_escape_char` (as described in quoted_string_decoder), the decoder state is
 	 * updated to `at_second_surrogate_element_escseq` and  the function returns nothing
 	 *
 	 * * Otherwise quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair is returned
 	 *
 	 * \ingroup stringconv
 	 */
-	template<string_decoder StringDecoder>
+	template<quoted_string_decoder StringDecoder>
 	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_before_second_surrogate_element_escseq(
 			StringDecoder& decoder,
 			char ch_in
@@ -281,7 +281,7 @@ namespace son
 	 *
 	 * When
 	 *
-	 * * `ch_in`  equals `codepoint_begin_char` (as described in string_decoder), the decoder state is
+	 * * `ch_in`  equals `codepoint_begin_char` (as described in quoted_string_decoder), the decoder state is
 	 * updated to `decode_codepoint` and the function returns nothing
 	 *
 	 * * Otherwise, the function returns quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair
@@ -337,7 +337,7 @@ namespace son
 	 * }
 	 *
 	 * string_normal --> string_escape : string_escape_char ('\\')
-	 * string_normal --> [*] : string_end_char ('"') [done]
+	 * string_normal --> [*] : quoted_string_end_char ('"') [done]
 	 * string_normal --> string_normal : accept_char() [valid normal char]
 	 *
 	 * string_escape --> decode_codepoint : codepoint_begin_char ('u')
@@ -350,16 +350,16 @@ namespace son
 	 * at_second_surrogate_element_escseq --> decode_codepoint : codepoint_begin_char ('u')
 	 * @enduml
 	 *
-	 * \tparam StringDecoder A type satisfying the \ref string_decoder concept.
+	 * \tparam StringDecoder A type satisfying the \ref quoted_string_decoder concept.
 	 * \param decoder The stateful decoder instance managing the input buffer and decoding state.
 	 * \return A \ref quoted_string_decode_result indicating whether the operation completed successfully,
 	 *         requires more data, or encountered a decoding error.
 	 * \ingroup stringconv
 	 * \warning This function only handles decoder states related to quoted strings. It is an error
 	 *          to call this function if `decoder.get_state()` returns any other value than
-	 *          documented in string_decoder.
+	 *          documented in quoted_string_decoder.
 	 */
-	template<string_decoder StringDecoder>
+	template<quoted_string_decoder StringDecoder>
 	constexpr quoted_string_decode_result decode_quoted_string(StringDecoder& decoder)
 	{
 		auto src_range = decoder.get_input_range();
