@@ -404,7 +404,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_wrong_return_value)
 	);
 
 	TestFwk::expect_death(
-		[&decoder](){
+		[&decoder]{
 			std::ignore = son::decode_quoted_string(decoder);
 		},
 		"son internal error: lib/./stringconv.hpp:246: Unexpected return value from accept_codepoint_hexdigit\n",
@@ -511,10 +511,10 @@ TESTCASE(son_stringconv_state_invalid)
 	);
 
 	TestFwk::expect_death(
-		[&decoder](){
+		[&decoder]{
 			std::ignore = son::decode_quoted_string(decoder);
 		},
-		"son internal error: lib/./stringconv.hpp:375: Unexpected return value from get_state",
+		"son internal error: lib/./stringconv.hpp:422: Unexpected return value from get_state",
 		SIGABRT
 	);
 }

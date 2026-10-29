@@ -307,6 +307,53 @@ namespace son
 	}
 
 	/**
+	 * \brief Decodes a quoted string using the provided stateful decoder
+	 *
+	 * This function iterates over the input range obtained from `decoder.get_input_range()`,
+	 * processing characters according to the current decoder state (such as normal text, escape
+	 * sequences, Unicode codepoints, or surrogate pairs). As characters are consumed and states
+	 * transition, the decoder's input range and internal state are updated accordingly.
+	 *
+	 * The state diagram for the decoding procedure is presented below
+	 *
+	 * @startuml
+	 * hide empty description
+	 *
+	 * [*] --> string_normal : Start decoding
+	 *
+	 * state string_normal {
+	 * }
+	 *
+	 * state string_escape {
+	 * }
+	 *
+	 * state decode_codepoint {
+	 * }
+	 *
+	 * state before_second_surrogate_element_escseq {
+	 * }
+	 *
+	 * state at_second_surrogate_element_escseq {
+	 * }
+	 *
+	 * string_normal --> string_escape : string_escape_char ('\\')
+	 * string_normal --> [*] : string_end_char ('"') [done]
+	 * string_normal --> string_normal : accept_char() [valid normal char]
+	 *
+	 * string_escape --> decode_codepoint : codepoint_begin_char ('u')
+	 * string_escape --> string_normal : accept_escape_code() [valid escape]
+	 *
+	 * decode_codepoint --> string_normal : hexdigit::done
+	 * decode_codepoint --> before_second_surrogate_element_escseq : hexdigit::second_surrogate_required
+	 *
+	 * before_second_surrogate_element_escseq --> at_second_surrogate_element_escseq : string_escape_char ('\\')
+	 * at_second_surrogate_element_escseq --> decode_codepoint : codepoint_begin_char ('u')
+	 * @enduml
+	 *
+	 * \tparam StringDecoder A type satisfying the \ref string_decoder concept.
+	 * \param decoder The stateful decoder instance managing the input buffer and decoding state.
+	 * \return A \ref string_decode_result indicating whether the operation completed successfully,
+	 *         requires more data, or encountered a decoding error.
 	 * \ingroup stringconv
 	 * \warning This function only handles decoder states related to quoted strings. It is an error
 	 *          to call this function if `decoder.get_state()` returns any other value than
