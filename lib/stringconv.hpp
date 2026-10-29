@@ -16,7 +16,7 @@ namespace son
 	 * \brief The result of a string decode operation
 	 * \ingroup stringconv
 	 */
-	enum class string_decode_result
+	enum class quoted_string_decode_result
 	{
 		/**
 		 * \brief The operation was completed without errors
@@ -133,16 +133,16 @@ namespace son
 	 * decoder state is updated to `string_escape`, and no result is returned
 	 *
 	 * * `ch_in` equals StringDecoder::string_end_char (as described in string_decoder), the decoder
-	 * state is kept, and the function returns string_decode_result::done
+	 * state is kept, and the function returns quoted_string_decode_result::done
 	 *
 	 * * In any other case, decoder is asked to `accept_char` (as described in string_decoder). If
 	 * decoder accepts `ch_in`, no result is returned, otherwise the return value is
-	 * string_decode_result::illegal_char_in_string. In any case, the decoder state is not updated.
+	 * quoted_string_decode_result::illegal_char_in_string. In any case, the decoder state is not updated.
 	 *
 	 * \ingroup stringconv
 	 */
 	template<string_decoder StringDecoder>
-	constexpr std::optional<string_decode_result> decode_quoted_string_state_normal(
+	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_normal(
 		StringDecoder& decoder,
 		char ch_in
 	)
@@ -155,11 +155,11 @@ namespace son
 				return std::nullopt;
 
 			case StringDecoder::string_end_char:
-				return string_decode_result::done;
+				return quoted_string_decode_result::done;
 
 			default:
 				if(!decoder.accept_char(ch_in))
-				{ return string_decode_result::illegal_char_in_string; }
+				{ return quoted_string_decode_result::illegal_char_in_string; }
 				return std::nullopt;
 		}
 	}
@@ -174,12 +174,12 @@ namespace son
 	 *
 	 * * Otherwise, decoder is asked to `accept_escape_code` (as described in string_decoder). If
 	 * decoder accepts `ch_in`, decoder state is updated to `string_normal` and there is no return
-	 * value. If it was not accepted, string_decode_result::illegal_char_in_string is returned.
+	 * value. If it was not accepted, quoted_string_decode_result::illegal_char_in_string is returned.
 	 *
 	 * \ingroup stringconv
 	 */
 	template<string_decoder StringDecoder>
-	constexpr std::optional<string_decode_result> decode_quoted_string_state_string_escape(
+	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_string_escape(
 		StringDecoder& decoder,
 		char ch_in
 	)
@@ -193,7 +193,7 @@ namespace son
 
 			default:
 				if(!decoder.accept_escape_code(ch_in))
-				{ return string_decode_result::illegal_char_in_string; }
+				{ return quoted_string_decode_result::illegal_char_in_string; }
 
 				decoder.set_state(decoder_state::string_normal);
 				return std::nullopt;
@@ -210,10 +210,10 @@ namespace son
 	 * and the function returns nothing
 	 *
 	 * * accept_codepoint_hexdigit_result::illegal_char_in_string, the function returns
-	 * string_decode_result::illegal_char_in_string
+	 * quoted_string_decode_result::illegal_char_in_string
 	 *
 	 * * accept_codepoint_hexdigit_result::invalid_input, the function returns
-	 * string_decode_result::invalid_escape_sequence
+	 * quoted_string_decode_result::invalid_escape_sequence
 	 *
 	 * * accept_codepoint_hexdigit_result::second_surrogate_element_required, the decoder state is
 	 * updated to `before_second_surrogate_element_escseq` and the function returns nothing
@@ -221,7 +221,7 @@ namespace son
 	 * \ingroup stringconv
 	 */
 	template<string_decoder StringDecoder>
-	constexpr std::optional<string_decode_result> decode_quoted_string_state_decode_codepoint(
+	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_decode_codepoint(
 		StringDecoder& decoder,
 		char ch_in
 	)
@@ -234,10 +234,10 @@ namespace son
 				return std::nullopt;
 
 			case accept_codepoint_hexdigit_result::illegal_char_in_string:
-				return string_decode_result::illegal_char_in_string;
+				return quoted_string_decode_result::illegal_char_in_string;
 
 			case accept_codepoint_hexdigit_result::invalid_input:
-				return string_decode_result::invalid_escape_sequence;
+				return quoted_string_decode_result::invalid_escape_sequence;
 
 			case accept_codepoint_hexdigit_result::second_surrogate_element_required:
 				decoder.set_state(decoder_state::before_second_surrogate_element_escseq);
@@ -254,12 +254,12 @@ namespace son
 	 * * `ch_in` equals `string_escape_char` (as described in string_decoder), the decoder state is
 	 * updated to `at_second_surrogate_element_escseq` and  the function returns nothing
 	 *
-	 * * Otherwise string_decode_result::illformed_escaped_utf16_surrogate_pair is returned
+	 * * Otherwise quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair is returned
 	 *
 	 * \ingroup stringconv
 	 */
 	template<string_decoder StringDecoder>
-	constexpr std::optional<string_decode_result> decode_quoted_string_state_before_second_surrogate_element_escseq(
+	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_before_second_surrogate_element_escseq(
 			StringDecoder& decoder,
 			char ch_in
 	)
@@ -272,7 +272,7 @@ namespace son
 				return std::nullopt;
 
 			default:
-				return string_decode_result::illformed_escaped_utf16_surrogate_pair;
+				return quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair;
 		}
 	}
 
@@ -284,12 +284,12 @@ namespace son
 	 * * `ch_in`  equals `codepoint_begin_char` (as described in string_decoder), the decoder state is
 	 * updated to `decode_codepoint` and the function returns nothing
 	 *
-	 * * Otherwise, the function returns string_decode_result::illformed_escaped_utf16_surrogate_pair
+	 * * Otherwise, the function returns quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair
 	 *
 	 * \ingroup stringconv
 	 */
 	template<class StringDecoder>
-	constexpr std::optional<string_decode_result> decode_quoted_string_state_at_second_surrogate_element_escseq(
+	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_at_second_surrogate_element_escseq(
 		StringDecoder& decoder,
 		char ch_in
 	)
@@ -302,7 +302,7 @@ namespace son
 					return std::nullopt;
 
 			default:
-					return string_decode_result::illformed_escaped_utf16_surrogate_pair;
+					return quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair;
 		}
 	}
 
@@ -352,7 +352,7 @@ namespace son
 	 *
 	 * \tparam StringDecoder A type satisfying the \ref string_decoder concept.
 	 * \param decoder The stateful decoder instance managing the input buffer and decoding state.
-	 * \return A \ref string_decode_result indicating whether the operation completed successfully,
+	 * \return A \ref quoted_string_decode_result indicating whether the operation completed successfully,
 	 *         requires more data, or encountered a decoding error.
 	 * \ingroup stringconv
 	 * \warning This function only handles decoder states related to quoted strings. It is an error
@@ -360,7 +360,7 @@ namespace son
 	 *          documented in string_decoder.
 	 */
 	template<string_decoder StringDecoder>
-	constexpr string_decode_result decode_quoted_string(StringDecoder& decoder)
+	constexpr quoted_string_decode_result decode_quoted_string(StringDecoder& decoder)
 	{
 		auto src_range = decoder.get_input_range();
 		using src_range_type = decltype(src_range);
@@ -368,7 +368,7 @@ namespace son
 		auto const last = src_range.end();
 
 		auto commit = [&](auto status){
-			if(status == string_decode_result::done)
+			if(status == quoted_string_decode_result::done)
 			{ ++first; }
 			decoder.set_input_range(src_range_type{first, last});
 			return status;
@@ -424,7 +424,7 @@ namespace son
 #pragma GCC diagnostic pop
 			++first;
 		}
-		return commit(string_decode_result::more_data_needed);
+		return commit(quoted_string_decode_result::more_data_needed);
 	}
 }
 

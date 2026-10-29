@@ -48,7 +48,7 @@ TESTCASE(son_stringconv_empty_returns_more_data_needed)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
@@ -75,7 +75,7 @@ TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_string_normal_handle_end_char)
@@ -97,7 +97,7 @@ TESTCASE(son_stringconv_state_string_normal_handle_end_char)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::done);
+	EXPECT_EQ(result, son::quoted_string_decode_result::done);
 }
 
 TESTCASE(son_stringconv_state_string_normal_other_char_invalid)
@@ -123,7 +123,7 @@ TESTCASE(son_stringconv_state_string_normal_other_char_invalid)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::illegal_char_in_string);
+	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
 TESTCASE(son_stringconv_state_string_normal_other_char_valid)
@@ -159,7 +159,7 @@ TESTCASE(son_stringconv_state_string_normal_other_char_valid)
 	);
 	auto const result = son::decode_quoted_string(decoder);
 	EXPECT_EQ(output_string, "Some data");
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_string_escape_codepoint_begin_char)
@@ -186,7 +186,7 @@ TESTCASE(son_stringconv_state_string_escape_codepoint_begin_char)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
@@ -212,7 +212,7 @@ TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::illegal_char_in_string);
+	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
 TESTCASE(son_stringconv_state_string_escape_other_char_valid)
@@ -245,7 +245,7 @@ TESTCASE(son_stringconv_state_string_escape_other_char_valid)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_decode_codepoint_done)
@@ -278,7 +278,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_done)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_decode_codepoint_illegal_char_in_string)
@@ -306,7 +306,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_illegal_char_in_string)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::illegal_char_in_string);
+	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
 TESTCASE(son_stringconv_state_decode_codepoint_invalid_input)
@@ -334,7 +334,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_invalid_input)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::invalid_escape_sequence);
+	EXPECT_EQ(result, son::quoted_string_decode_result::invalid_escape_sequence);
 }
 
 TESTCASE(son_stringconv_state_decode_codepoint_second_surrogate_element_required)
@@ -367,7 +367,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_second_surrogate_element_required
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_decode_codepoint_wrong_return_value)
@@ -436,7 +436,7 @@ TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_string_esca
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_other)
@@ -458,7 +458,7 @@ TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_other)
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::illformed_escaped_utf16_surrogate_pair);
+	EXPECT_EQ(result, son::quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair);
 }
 
 TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_codepoint_begin_char)
@@ -485,7 +485,7 @@ TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_codepoint_begin
 		}
 	);
 	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
+	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
 TESTCASE(son_stringconv_state_invalid)
