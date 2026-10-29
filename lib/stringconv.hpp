@@ -308,8 +308,11 @@ namespace son
 
 	/**
 	 * \ingroup stringconv
+	 * \warning This function only handles decoder states related to quoted strings. It is an error
+	 *          to call this function if `decoder.get_state()` returns any other value than
+	 *          documented in string_decoder.
 	 */
-	template<class StringDecoder>
+	template<string_decoder StringDecoder>
 	constexpr string_decode_result decode_quoted_string(StringDecoder& decoder)
 	{
 		auto src_range = decoder.get_input_range();
@@ -328,6 +331,9 @@ namespace son
 		{
 			auto const ch_in = *first;
 			using decoder_state = StringDecoder::state;
+// This function does not know how to handle every possible decoder_state.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
 			switch(decoder.get_state())
 			{
 				case decoder_state::string_normal:
@@ -364,7 +370,11 @@ namespace son
 					)
 					{ return commit(*result); }
 					break;
+
+				default:
+					raise_internal_error("Unexpected return value from get_state");
 			}
+#pragma GCC diagnostic pop
 			++first;
 		}
 		return commit(string_decode_result::more_data_needed);

@@ -18,7 +18,8 @@ namespace
 			string_escape,
 			decode_codepoint,
 			before_second_surrogate_element_escseq,
-			at_second_surrogate_element_escseq
+			at_second_surrogate_element_escseq,
+			bad_state
 		};
 
 		TestFwk::mock_entry<state()> get_state;
@@ -487,24 +488,33 @@ TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_codepoint_begin
 	EXPECT_EQ(result, son::string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_other)
+TESTCASE(son_stringconv_state_invalid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
 		[]{
 			return std::string_view{"Some data"};
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
 		}
 	);
 	decoder.get_state.expect_call_with_action(
 		[]{
-			return test_string_decoder::state::at_second_surrogate_element_escseq;
+			return test_string_decoder::state::bad_state;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
 		}
 	);
-	decoder.set_input_range.expect_call_with_action(
-		[](std::string_view new_range){
-			EXPECT_EQ(new_range, "Some data");
-		}
+
+	TestFwk::expect_death(
+		[&decoder](){
+			std::ignore = son::decode_quoted_string(decoder);
+		},
+		"son internal error: lib/./stringconv.hpp:375: Unexpected return value from get_state",
+		SIGABRT
 	);
-	auto const result = son::decode_quoted_string(decoder);
-	EXPECT_EQ(result, son::string_decode_result::illformed_escaped_utf16_surrogate_pair);
 }
