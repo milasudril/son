@@ -1,6 +1,10 @@
 #ifndef SON_PARENSTRING_UTILS_HPP
 #define SON_PARENSTRING_UTILS_HPP
 
+#include "./exception.hpp"
+
+#include <optional>
+
 namespace son
 {
 	/**
@@ -78,7 +82,7 @@ namespace son
 		auto const last = src_range.end();
 
 		auto commit = [&](auto status){
-			if(status == quoted_string_decode_result::done)
+			if(status == parenstring_decode_result::done)
 			{ ++first; }
 			decoder.set_input_range(src_range_type{first, last});
 			return status;
