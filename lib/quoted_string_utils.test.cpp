@@ -1,6 +1,6 @@
-//@	{"target":{"name":"stringconv.test"}}
+//@	{"target":{"name":"quoted_string_utils.test"}}
 
-#include "./stringconv.hpp"
+#include "./quoted_string_utils.hpp"
 #include "testfwk/death_test.hpp"
 
 #include <testfwk/testfwk.hpp>
@@ -34,7 +34,7 @@ namespace
 	};
 }
 
-TESTCASE(son_stringconv_empty_returns_more_data_needed)
+TESTCASE(son_quoted_string_utils_empty_returns_more_data_needed)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -51,7 +51,7 @@ TESTCASE(son_stringconv_empty_returns_more_data_needed)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_escape_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -78,7 +78,7 @@ TESTCASE(son_stringconv_state_string_normal_handle_escape_char)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_string_normal_handle_end_char)
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_end_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -100,7 +100,7 @@ TESTCASE(son_stringconv_state_string_normal_handle_end_char)
 	EXPECT_EQ(result, son::quoted_string_decode_result::done);
 }
 
-TESTCASE(son_stringconv_state_string_normal_other_char_invalid)
+TESTCASE(son_quoted_string_utils_state_string_normal_other_char_invalid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -126,7 +126,7 @@ TESTCASE(son_stringconv_state_string_normal_other_char_invalid)
 	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
-TESTCASE(son_stringconv_state_string_normal_other_char_valid)
+TESTCASE(son_quoted_string_utils_state_string_normal_other_char_valid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -162,7 +162,7 @@ TESTCASE(son_stringconv_state_string_normal_other_char_valid)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_string_escape_codepoint_begin_char)
+TESTCASE(son_quoted_string_utils_state_string_escape_codepoint_begin_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -189,7 +189,7 @@ TESTCASE(son_stringconv_state_string_escape_codepoint_begin_char)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
+TESTCASE(son_quoted_string_utils_state_string_escape_other_char_invalid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -215,7 +215,7 @@ TESTCASE(son_stringconv_state_string_escape_other_char_invalid)
 	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
-TESTCASE(son_stringconv_state_string_escape_other_char_valid)
+TESTCASE(son_quoted_string_utils_state_string_escape_other_char_valid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -248,7 +248,7 @@ TESTCASE(son_stringconv_state_string_escape_other_char_valid)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_decode_codepoint_done)
+TESTCASE(son_quoted_string_utils_state_decode_codepoint_done)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -281,7 +281,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_done)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_decode_codepoint_illegal_char_in_string)
+TESTCASE(son_quoted_string_utils_state_decode_codepoint_illegal_char_in_string)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -309,7 +309,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_illegal_char_in_string)
 	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
-TESTCASE(son_stringconv_state_decode_codepoint_invalid_input)
+TESTCASE(son_quoted_string_utils_state_decode_codepoint_invalid_input)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -337,7 +337,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_invalid_input)
 	EXPECT_EQ(result, son::quoted_string_decode_result::invalid_escape_sequence);
 }
 
-TESTCASE(son_stringconv_state_decode_codepoint_second_surrogate_element_required)
+TESTCASE(son_quoted_string_utils_state_decode_codepoint_second_surrogate_element_required)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -370,7 +370,7 @@ TESTCASE(son_stringconv_state_decode_codepoint_second_surrogate_element_required
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_decode_codepoint_wrong_return_value)
+TESTCASE(son_quoted_string_utils_state_decode_codepoint_wrong_return_value)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -407,12 +407,12 @@ TESTCASE(son_stringconv_state_decode_codepoint_wrong_return_value)
 		[&decoder]{
 			std::ignore = son::decode_quoted_string(decoder);
 		},
-		"son internal error: lib/./stringconv.hpp:246: Unexpected return value from accept_codepoint_hexdigit\n",
+		"son internal error: lib/./quoted_string_utils.hpp:246: Unexpected return value from accept_codepoint_hexdigit\n",
 		SIGABRT
 	);
 }
 
-TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_string_escape_char)
+TESTCASE(son_quoted_string_utils_state_before_second_surrogate_element_escseq_string_escape_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -439,7 +439,7 @@ TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_string_esca
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_other)
+TESTCASE(son_quoted_string_utils_state_before_second_surrogate_element_escseq_other)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -461,7 +461,7 @@ TESTCASE(son_stringconv_state_before_second_surrogate_element_escseq_other)
 	EXPECT_EQ(result, son::quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair);
 }
 
-TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_codepoint_begin_char)
+TESTCASE(son_quoted_string_utils_state_at_second_surrogate_element_escseq_codepoint_begin_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -488,7 +488,7 @@ TESTCASE(son_stringconv_state_at_second_surrogate_element_escseq_codepoint_begin
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_stringconv_state_invalid)
+TESTCASE(son_quoted_string_utils_state_invalid)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -514,7 +514,7 @@ TESTCASE(son_stringconv_state_invalid)
 		[&decoder]{
 			std::ignore = son::decode_quoted_string(decoder);
 		},
-		"son internal error: lib/./stringconv.hpp:422: Unexpected return value from get_state",
+		"son internal error: lib/./quoted_string_utils.hpp:422: Unexpected return value from get_state",
 		SIGABRT
 	);
 }
