@@ -150,3 +150,84 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_end_char)
 	auto const result = son::decode_parenstring(decoder);
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
+
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"X"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char){
+			return true;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_not_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char){
+			return false;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "Some data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
+}
+
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"X"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char){
+			return true;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
