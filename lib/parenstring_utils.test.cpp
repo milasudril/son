@@ -28,7 +28,7 @@ namespace
 	};
 }
 
-TESTCASE(son_quoted_string_utils_empty_returns_more_data_needed)
+TESTCASE(son_parenstring_utils_empty_returns_more_data_needed)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -39,6 +39,33 @@ TESTCASE(son_quoted_string_utils_empty_returns_more_data_needed)
 	decoder.set_input_range.expect_call_with_action(
 		[](std::string_view str){
 			EXPECT_EQ(str.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_escape_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"\\"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](auto state) {
+			EXPECT_EQ(state, test_string_decoder::state::string_escape);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
 		}
 	);
 	auto const result = son::decode_parenstring(decoder);
