@@ -356,3 +356,112 @@ TESTCASE(son_parenstring_utils_state_string_escape_handle_parenstring_end_char_a
 	auto const result = son::decode_parenstring(decoder);
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_other_char_escape_char_not_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"\\some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, '\\');
+			return false;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "\\some data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
+}
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_other_char_escape_char_accepted_following_not)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[callcount = 0](char ch_in) mutable{
+			++callcount;
+			if(callcount == 1)
+			{
+				EXPECT_EQ(ch_in, '\\');
+				return true;
+			}
+
+			EXPECT_EQ(ch_in, 's');
+			return false;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(2)
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "some data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
+}
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_other_char_everything_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"s"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[callcount = 0](char ch_in) mutable{
+			++callcount;
+			if(callcount == 1)
+			{
+				EXPECT_EQ(ch_in, '\\');
+				return true;
+			}
+
+			EXPECT_EQ(ch_in, 's');
+			return true;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(2)
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](auto new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::string_normal);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
