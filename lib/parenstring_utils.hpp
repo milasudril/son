@@ -37,11 +37,13 @@ namespace son
 			case StringDecoder::parenstring_end_char:
 				if(decoder.dec_paren_count() == 0)
 				{ return parenstring_decode_result::done; }
+
 				return std::nullopt;
 
 			default:
 				if(!decoder.accept_char(ch_in))
 				{ return parenstring_decode_result::illegal_char_in_string; }
+
 				return std::nullopt;
 		}
 	}
@@ -59,6 +61,7 @@ namespace son
 			case StringDecoder::parenstring_end_char:
 				if(!decoder.accept_char(ch_in))
 				{ return parenstring_decode_result::illegal_char_in_string; }
+
 				decoder.set_state(decoder_state::string_normal);
 				return std::nullopt;
 
@@ -68,6 +71,7 @@ namespace son
 
 				if(!decoder.accept_char(ch_in))
 				{ return parenstring_decode_result::illegal_char_in_string; }
+
 				decoder.set_state(decoder_state::string_normal);
 				return std::nullopt;
 		}
@@ -106,7 +110,6 @@ namespace son
 					if(auto const result = decode_parenstring_state_string_escape(decoder, ch_in))
 					{ return commit(*result); }
 					break;
-
 
 				default:
 					raise_internal_error("Unexpected return value from get_state");

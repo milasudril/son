@@ -11,7 +11,8 @@ namespace
 	{
 		enum class state{
 			string_normal,
-			string_escape
+			string_escape,
+			bad
 		};
 
 		static constexpr auto parenstring_begin_char = '(';
@@ -464,4 +465,35 @@ TESTCASE(son_parenstring_utils_state_string_escape_handle_other_char_everything_
 	);
 	auto const result = son::decode_parenstring(decoder);
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_parenstring_utils_state_bad)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"s"};
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::bad;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(1),
+			.count_with_fd = true
+		}
+	);
+
+	TestFwk::expect_death(
+		[&]{
+			std::ignore = son::decode_parenstring(decoder);
+		},
+		"son internal error: lib/./parenstring_utils.hpp:115: Unexpected return value from get_state\n",
+		SIGABRT
+	);
 }
