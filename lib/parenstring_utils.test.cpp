@@ -45,7 +45,7 @@ TESTCASE(son_parenstring_utils_empty_returns_more_data_needed)
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_escape_char)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_escape_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -72,7 +72,7 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_escape_char)
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_begin_char)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_begin_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -97,7 +97,7 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_begin_char)
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_last_end_char)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_last_end_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -124,7 +124,7 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_last_end_char)
 	EXPECT_EQ(result, son::parenstring_decode_result::done);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_end_char)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_end_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -151,7 +151,7 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_end_char)
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_other_char)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -165,7 +165,8 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char)
 		}
 	);
 	decoder.accept_char.expect_call_with_action(
-		[](char){
+		[](char ch_in){
+			EXPECT_EQ(ch_in, 'X');
 			return true;
 		}
 	);
@@ -178,7 +179,7 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char)
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_not_accepted)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_other_char_not_accepted)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -192,7 +193,8 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_not_accep
 		}
 	);
 	decoder.accept_char.expect_call_with_action(
-		[](char){
+		[](char ch_in){
+			EXPECT_EQ(ch_in, 'S');
 			return false;
 		}
 	);
@@ -205,7 +207,7 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_not_accep
 	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
 }
 
-TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_accepted)
+TESTCASE(son_parenstring_utils_state_string_normal_handle_other_char_accepted)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -219,8 +221,131 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_other_char_accepted)
 		}
 	);
 	decoder.accept_char.expect_call_with_action(
-		[](char){
+		[](char ch_in){
+			EXPECT_EQ(ch_in, 'X');
 			return true;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_parenstring_begin_char_not_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"(Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, '(');
+			return false;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "(Some data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
+}
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_parenstring_begin_char_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"("};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, '(');
+			return true;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](auto new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::string_normal);
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_parenstring_end_char_not_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{")Some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, ')');
+			return false;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, ")Some data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
+}
+
+TESTCASE(son_parenstring_utils_state_string_escape_handle_parenstring_end_char_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{")"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_escape;
+		}
+	);
+	decoder.accept_char.expect_call_with_action(
+		[](char ch_in){
+			EXPECT_EQ(ch_in, ')');
+			return true;
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[](auto new_state){
+			EXPECT_EQ(new_state, test_string_decoder::state::string_normal);
 		}
 	);
 	decoder.set_input_range.expect_call_with_action(
