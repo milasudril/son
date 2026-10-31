@@ -96,3 +96,57 @@ TESTCASE(son_quoted_string_utils_state_string_normal_handle_begin_char)
 	auto const result = son::decode_parenstring(decoder);
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
 }
+
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_last_end_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{")more data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.dec_paren_count.expect_call_with_action(
+		[] -> size_t{
+			return 0;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "more data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::done);
+}
+
+TESTCASE(son_quoted_string_utils_state_string_normal_handle_end_char)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{")"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.dec_paren_count.expect_call_with_action(
+		[] -> size_t{
+			return 1;
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range.empty(), true);
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
