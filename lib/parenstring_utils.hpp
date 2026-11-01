@@ -9,6 +9,45 @@ namespace son
 {
 	/**
 	 * \defgroup parenstring Functionality related to strings in parenthesis
+	 *
+	 * A **parenstring** is a string encoding format designed to minimize the need for escape
+	 * sequences. This is achieved by using matched parentheses as delimiters. The assumption is that
+	 * most text will have matching pairs of parentheses. If not an escape character can be used to
+	 * write the mismatched parenthesis
+	 *
+	 * * A begin character (typically `(`) increments the parenthesis nesting level
+	 *
+	 * * An end character (typically `)`) decrements the nesting level
+	 *
+	 * * The parenstring terminates when an end character reduces the nesting count to zero
+	 *
+	 * To encode the begin and end character, when it would result in mismatched begin/end characters,
+	 * a corresponding escape sequence is used. Typically <code>\\</code> is used as the escape
+	 * character. In that case, the following escape sequences are recognised
+	 *
+	 * | Sequences     | Interpretation |
+	 * |---------------|----------------|
+	 * | `\(` and `\)` | The delimiter `(` or `)`, is treated as a literal character |
+	 * | General escape sequences (`\X`) | The sequence is treated literally |
+	 *
+	 *
+	 * A use-case for mismatched parentheses is a half-open interval. Using
+	 * `(`, `)` and <code>\\</code>, it could be written as
+	 *
+	 * ```
+	 * I = \(0, x(a + b)]
+	 * ```
+	 *
+	 * The representation is not unique. The above could also be written as
+	 *
+	 * ```
+	 * I = (0, x\(a + b)]
+	 * ```
+	 *
+	 * An encoder may also take the simple approach to escape all parentheses. To optimise the
+	 * encoding, it needs to run a parentheses matching step. If it finds to many `(`, the
+	 * excess `(` are escaped. Likewise, if it finds too many `)`, the excess `)` are escaped.
+	 *
 	 */
 
 	/**
