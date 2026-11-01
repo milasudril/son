@@ -247,44 +247,42 @@ namespace son
 	}
 
 	/**
-	 * \brief Decodes a parenstring from an input range managed by the decoder
+	 * \brief Decodes a parenstring from the input range managed by the decoder.
 	 *
-	 * Iterates through the input range provided by the decoder, processing characters
-	 * according to the current state (`string_normal` or `string_escape`). It coordinates
-	 * state transitions, handles escape characters, manages nested parentheses, and commits
-	 * consumed characters back to the decoder's input range.
+	 * This function iterates through the input range provided by \p decoder, dispatching
+	 * character processing based on the current decoder state (`string_normal` or `string_escape`).
+	 * It manages input range advancement and commits results upon completion or error.
 	 *
-	 * \tparam StringDecoder A type satisfying the `parenstring_decoder` concept.
-	 * \param decoder Reference to the decoder state and input range manager.
-	 * \return A `parenstring_decode_result` indicating whether decoding completed successfully
-	 *         (`done`), encountered an illegal character (`illegal_char_in_string`), or
-	 *         requires more data (`more_data_needed`).
-	 *
-	 * The state machine for decoding a string is presented below
-	 *
-	 * @startuml
-	 * [*] --> string_normal
-	 *
-	 * state string_normal {
-	 * }
-	 *
-	 * state string_escape {
-	 * }
-	 *
-	 * string_normal --> string_escape : string_escape_char
-	 * string_normal --> string_normal : parenstring_begin_char
-	 * string_normal --> string_normal : parenstring_end_char (count > 0)
-	 * string_normal --> [*] : parenstring_end_char (count == 0)
-	 * string_normal --> string_normal : ch_in (accepted)
-	 * string_normal --> [*] : ch_in (rejected)
-	 *
-	 * string_escape --> string_normal : parenstring_begin/end_char (accepted)
-	 * string_escape --> Error : parenstring_begin/end_char (rejected)
-	 * string_escape --> string_normal : ch_in (accepted)
-	 * string_escape --> Error : ch_in (rejected)
-	 * @enduml
+	 * \tparam StringDecoder A type satisfying the \ref parenstring_decoder concept.
+	 * \param decoder Reference to the stateful decoder instance.
+	 * \return A parenstring_decode_result
+	 *         - parenstring_decode_result::done if the parenstring terminated successfully.
+	 *         - parenstring_decode_result::illegal_char_in_string if an invalid character or unexpected sequence was encountered.
+	 *         - parenstring_decode_result::more_data_needed if the input range was exhausted before the parenstring terminated.
 	 *
 	 * \ingroup parenstring
+	 *
+	 * The following diagram illustrates the states and transition logic executed by decode_parenstring:
+	 *
+	 * @startuml
+	 * skinparam DefaultTextAlignment center
+	 * hide empty description
+	 *
+	 * [*] --> string_normal : start decoding
+	 *
+	 * string_normal --> string_escape : ch_in == string_escape_char
+	 *
+	 * string_normal --> [*] : ch_in == parenstring_end_char\n && dec_paren_count() == 0
+	 *
+	 * string_normal --> [*] : error
+	 *
+	 * string_normal --> string_normal : Everything else
+	 *
+	 * string_escape --> string_normal
+	 *
+	 * string_escape --> [*] : error
+	 *
+	 * @enduml
 	 */
 	template<parenstring_decoder StringDecoder>
 	parenstring_decode_result decode_parenstring(StringDecoder& decoder)
