@@ -4,6 +4,8 @@
 
 #include <testfwk/mock_util.hpp>
 #include <testfwk/testfwk.hpp>
+#include <algorithm>
+#include <cstring>
 
 namespace
 {
@@ -89,6 +91,10 @@ TESTCASE(son_parenstring_utils_state_string_normal_handle_begin_char)
 	decoder.inc_paren_count.expect_call_with_action(
 		[]{}
 	);
+	decoder.accept_char.expect_call_with_action([](auto ch_in){
+		EXPECT_EQ(ch_in, '(');
+		return true;
+	});
 	decoder.set_input_range.expect_call_with_action(
 		[](std::string_view new_range){
 			EXPECT_EQ(new_range.empty(), true);
@@ -96,6 +102,32 @@ TESTCASE(son_parenstring_utils_state_string_normal_handle_begin_char)
 	);
 	auto const result = son::decode_parenstring(decoder);
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_parenstring_utils_state_string_normal_handle_begin_char_char_not_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"(more data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.accept_char.expect_call_with_action([](auto ch_in){
+		EXPECT_EQ(ch_in, '(');
+		return false;
+	});
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, "(more data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
 }
 
 TESTCASE(son_parenstring_utils_state_string_normal_handle_last_end_char)
@@ -143,6 +175,10 @@ TESTCASE(son_parenstring_utils_state_string_normal_handle_end_char)
 			return 1;
 		}
 	);
+	decoder.accept_char.expect_call_with_action([](char ch_in){
+		EXPECT_EQ(ch_in, ')');
+		return true;
+	});
 	decoder.set_input_range.expect_call_with_action(
 		[](std::string_view new_range){
 			EXPECT_EQ(new_range.empty(), true);
@@ -150,6 +186,37 @@ TESTCASE(son_parenstring_utils_state_string_normal_handle_end_char)
 	);
 	auto const result = son::decode_parenstring(decoder);
 	EXPECT_EQ(result, son::parenstring_decode_result::more_data_needed);
+}
+
+TESTCASE(son_parenstring_utils_state_string_normal_handle_end_char_char_not_accepted)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{")some data"};
+		}
+	);
+	decoder.get_state.expect_call_with_action(
+		[]{
+			return test_string_decoder::state::string_normal;
+		}
+	);
+	decoder.dec_paren_count.expect_call_with_action(
+		[] -> size_t{
+			return 1;
+		}
+	);
+	decoder.accept_char.expect_call_with_action([](char ch_in){
+		EXPECT_EQ(ch_in, ')');
+		return false;
+	});
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range){
+			EXPECT_EQ(new_range, ")some data");
+		}
+	);
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::illegal_char_in_string);
 }
 
 TESTCASE(son_parenstring_utils_state_string_normal_handle_other_char)
@@ -493,7 +560,129 @@ TESTCASE(son_parenstring_utils_state_bad)
 		[&]{
 			std::ignore = son::decode_parenstring(decoder);
 		},
-		"son internal error: lib/./parenstring_utils.hpp:314: Unexpected return value from get_state\n",
+		"son internal error: lib/./parenstring_utils.hpp:324: Unexpected return value from get_state\n",
 		SIGABRT
 	);
+}
+
+TESTCASE(son_parenstring_utils_decode_string_with_all_parens_escaped)
+{
+	test_string_decoder decoder;
+	static constexpr std::string_view to_decode{"I = \\(0, x\\(a + b\\)])remaining stuff"};
+	static constexpr std::string_view decoded{"I = (0, x(a + b)]"};
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return to_decode;
+		}
+	);
+	auto current_state = test_string_decoder::state::string_normal;
+	decoder.get_state.expect_call_with_action(
+		[&current_state]{
+			return current_state;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(
+				std::size(to_decode) - strlen("remaining stuff")
+			)
+		}
+	);
+	std::string buffer;
+	decoder.accept_char.expect_call_with_action(
+		[&buffer](char ch_in) {
+			buffer += ch_in;
+			return true;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(std::size(decoded))
+		}
+	);
+	decoder.dec_paren_count.expect_call_with_action([]-> size_t{
+		return 0;
+	});
+	decoder.set_state.expect_call_with_action(
+		[&current_state](auto new_state){
+			current_state = new_state;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(
+				2*std::ranges::count(to_decode, '\\')
+			)
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range) {
+			EXPECT_EQ(new_range, "remaining stuff");
+		}
+	);
+
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::done);
+	EXPECT_EQ(buffer, decoded);
+}
+
+TESTCASE(son_parenstring_utils_decode_string_with_extra_open_paren)
+{
+	test_string_decoder decoder;
+	static constexpr std::string_view to_decode{"I = \\(0, x(a + b)])remaining stuff"};
+	static constexpr std::string_view decoded{"I = (0, x(a + b)]"};
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return to_decode;
+		}
+	);
+	auto current_state = test_string_decoder::state::string_normal;
+	decoder.get_state.expect_call_with_action(
+		[&current_state]{
+			return current_state;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(
+				std::size(to_decode) - strlen("remaining stuff")
+			)
+		}
+	);
+	std::string buffer;
+	decoder.accept_char.expect_call_with_action(
+		[&buffer](char ch_in) {
+			buffer += ch_in;
+			return true;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(std::size(decoded))
+		}
+	);
+	size_t num_parens = 1;
+	decoder.inc_paren_count.expect_call_with_action(
+		[&num_parens]{
+			++num_parens;
+		}
+	);
+	decoder.dec_paren_count.expect_call_with_action(
+		[&num_parens]-> size_t{
+			--num_parens;
+			return num_parens;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(2)
+		}
+	);
+	decoder.set_state.expect_call_with_action(
+		[&current_state](auto new_state){
+			current_state = new_state;
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(
+				2*std::ranges::count(to_decode, '\\')
+			)
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view new_range) {
+			EXPECT_EQ(new_range, "remaining stuff");
+		}
+	);
+
+	auto const result = son::decode_parenstring(decoder);
+	EXPECT_EQ(result, son::parenstring_decode_result::done);
+	EXPECT_EQ(buffer, decoded);
 }

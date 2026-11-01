@@ -136,15 +136,19 @@ namespace son
 	 * * `ch_in` equals StringDecoder::string_escape_char (as described in parenstring_decoder), the
 	 *   decoder state is updated to `string_escape`, and no result is returned
 	 *
-	 * * `ch_in` equals StringDecoder::parenstring_end_char (as described in parenstring_decoder), the
-	 *   the parenthesis count is incremented, and the function returns nothing
+	 * * `ch_in` equals StringDecoder::parenstring_end_char (as described in parenstring_decoder),
+	 *   decoder is asked to accept the character. If it doesn't
+	 *   parenstring_decode_result::illegal_char_in_string is returned. Otherwise, the parenthesis
+	 *   count is incremented, and the function returns nothing. In any case the state is kept.
 	 *
 	 * * `ch_in` equals StringDecoder::parenstring_end_char (as described in parenstring_decoder), and
 	 *
 	 *   * the last parenthesis was closed, the state is kept, and the function returns
 	 *    parenstring_decode_result::done
 	 *
-	 *   * the last parenthesis was nto closed, the state is kept, and nothing is returned
+	 *   * the last parenthesis was not closed, decoder is asked to accept the character. If it
+	 *     doesn't, parenstring_decode_result::illegal_char_in_string is returned. Otherwise nothing
+	 *     is returned. In any case the state is kept.
 	 *
 	 * * In any other case, decoder is asked to `accept_char` (as described in parenstring_decoder).
 	 *   If decoder accepts `ch_in`, no result is returned, otherwise the return value is
@@ -167,12 +171,18 @@ namespace son
 				return std::nullopt;
 
 			case StringDecoder::parenstring_begin_char:
+				if(!decoder.accept_char(ch_in))
+				{ return parenstring_decode_result::illegal_char_in_string; }
+
 				decoder.inc_paren_count();
 				return std::nullopt;
 
 			case StringDecoder::parenstring_end_char:
 				if(decoder.dec_paren_count() == 0)
 				{ return parenstring_decode_result::done; }
+
+				if(!decoder.accept_char(ch_in))
+				{ return parenstring_decode_result::illegal_char_in_string; }
 
 				return std::nullopt;
 
