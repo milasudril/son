@@ -16,7 +16,7 @@ namespace
 		enum class state{
 			string_normal,
 			string_escape,
-			decode_codepoint,
+			decode_utf16_seq_to_codepoint,
 			before_second_surrogate_element_escseq,
 			at_second_surrogate_element_escseq,
 			bad_state
@@ -177,7 +177,7 @@ TESTCASE(son_quoted_string_utils_state_string_escape_codepoint_begin_char)
 	);
 	decoder.set_state.expect_call_with_action(
 		[](test_string_decoder::state new_state){
-			EXPECT_EQ(new_state, test_string_decoder::state::decode_codepoint);
+			EXPECT_EQ(new_state, test_string_decoder::state::decode_utf16_seq_to_codepoint);
 		}
 	);
 	decoder.set_input_range.expect_call_with_action(
@@ -248,7 +248,7 @@ TESTCASE(son_quoted_string_utils_state_string_escape_other_char_valid)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_decode_codepoint_done)
+TESTCASE(son_quoted_string_utils_state_decode_utf16_seq_to_codepoint_done)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -258,7 +258,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_done)
 	);
 	decoder.get_state.expect_call_with_action(
 		[]{
-			return test_string_decoder::state::decode_codepoint;
+			return test_string_decoder::state::decode_utf16_seq_to_codepoint;
 		}
 	);
 	decoder.accept_codepoint_hexdigit.expect_call_with_action(
@@ -281,7 +281,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_done)
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_decode_codepoint_illegal_char_in_string)
+TESTCASE(son_quoted_string_utils_state_decode_utf16_seq_to_codepoint_illegal_char_in_string)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -291,7 +291,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_illegal_char_in_string)
 	);
 	decoder.get_state.expect_call_with_action(
 		[]{
-			return test_string_decoder::state::decode_codepoint;
+			return test_string_decoder::state::decode_utf16_seq_to_codepoint;
 		}
 	);
 	decoder.accept_codepoint_hexdigit.expect_call_with_action(
@@ -309,7 +309,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_illegal_char_in_string)
 	EXPECT_EQ(result, son::quoted_string_decode_result::illegal_char_in_string);
 }
 
-TESTCASE(son_quoted_string_utils_state_decode_codepoint_invalid_input)
+TESTCASE(son_quoted_string_utils_state_decode_utf16_seq_to_codepoint_invalid_input)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -319,7 +319,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_invalid_input)
 	);
 	decoder.get_state.expect_call_with_action(
 		[]{
-			return test_string_decoder::state::decode_codepoint;
+			return test_string_decoder::state::decode_utf16_seq_to_codepoint;
 		}
 	);
 	decoder.accept_codepoint_hexdigit.expect_call_with_action(
@@ -337,7 +337,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_invalid_input)
 	EXPECT_EQ(result, son::quoted_string_decode_result::invalid_escape_sequence);
 }
 
-TESTCASE(son_quoted_string_utils_state_decode_codepoint_second_surrogate_element_required)
+TESTCASE(son_quoted_string_utils_state_decode_utf16_seq_to_codepoint_second_surrogate_element_required)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -347,7 +347,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_second_surrogate_element
 	);
 	decoder.get_state.expect_call_with_action(
 		[]{
-			return test_string_decoder::state::decode_codepoint;
+			return test_string_decoder::state::decode_utf16_seq_to_codepoint;
 		}
 	);
 	decoder.accept_codepoint_hexdigit.expect_call_with_action(
@@ -370,7 +370,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_second_surrogate_element
 	EXPECT_EQ(result, son::quoted_string_decode_result::more_data_needed);
 }
 
-TESTCASE(son_quoted_string_utils_state_decode_codepoint_wrong_return_value)
+TESTCASE(son_quoted_string_utils_state_decode_utf16_seq_to_codepoint_wrong_return_value)
 {
 	test_string_decoder decoder;
 	decoder.get_input_range.expect_call_with_action(
@@ -384,7 +384,7 @@ TESTCASE(son_quoted_string_utils_state_decode_codepoint_wrong_return_value)
 	);
 	decoder.get_state.expect_call_with_action(
 		[]{
-			return test_string_decoder::state::decode_codepoint;
+			return test_string_decoder::state::decode_utf16_seq_to_codepoint;
 		},
 		TestFwk::expectation_options{
 			.cardinality = TestFwk::cardinality_constraint::exactly(1),
@@ -476,7 +476,7 @@ TESTCASE(son_quoted_string_utils_state_at_second_surrogate_element_escseq_codepo
 	);
 	decoder.set_state.expect_call_with_action(
 		[](test_string_decoder::state new_state){
-			EXPECT_EQ(new_state, test_string_decoder::state::decode_codepoint);
+			EXPECT_EQ(new_state, test_string_decoder::state::decode_utf16_seq_to_codepoint);
 		}
 	);
 	decoder.set_input_range.expect_call_with_action(

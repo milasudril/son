@@ -121,7 +121,7 @@ namespace son
 		 */
 		///@{
 		{T::state::string_escape} -> std::same_as<typename T::state>;
-		{T::state::decode_codepoint} -> std::same_as<typename T::state>;
+		{T::state::decode_utf16_seq_to_codepoint} -> std::same_as<typename T::state>;
 		{T::state::string_normal} -> std::same_as<typename T::state>;
 		{T::state::before_second_surrogate_element_escseq} -> std::same_as<typename T::state>;
 		{T::state::at_second_surrogate_element_escseq} -> std::same_as<typename T::state>;
@@ -174,7 +174,7 @@ namespace son
 	 * When
 	 *
 	 * * `ch_in` equals StringDecoder::codepoint_begin_char (as described in quoted_string_decoder), the
-	 * decoder state is updated to `decode_codepoint`, and no result is returned
+	 * decoder state is updated to `decode_utf16_seq_to_codepoint`, and no result is returned
 	 *
 	 * * Otherwise, decoder is asked to `accept_escape_code` (as described in quoted_string_decoder). If
 	 * decoder accepts `ch_in`, decoder state is updated to `string_normal` and there is no return
@@ -192,7 +192,7 @@ namespace son
 		switch(ch_in)
 		{
 			case StringDecoder::codepoint_begin_char:
-				decoder.set_state(decoder_state::decode_codepoint);
+				decoder.set_state(decoder_state::decode_utf16_seq_to_codepoint);
 				return std::nullopt;
 
 			default:
@@ -205,7 +205,7 @@ namespace son
 	}
 
 	/**
-	 * \brief  Handles the `decode_codepoint` state when decoding a quoted string
+	 * \brief  Handles the `decode_utf16_seq_to_codepoint` state when decoding a quoted string
 	 *
 	 * This function will call accept_codepoint_hexdigit (see quoted_string_decoder) on decoder, when the
 	 * result is
@@ -225,7 +225,7 @@ namespace son
 	 * \ingroup qstrings
 	 */
 	template<quoted_string_decoder StringDecoder>
-	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_decode_codepoint(
+	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_decode_utf16_seq_to_codepoint(
 		StringDecoder& decoder,
 		char ch_in
 	)
@@ -286,7 +286,7 @@ namespace son
 	 * When
 	 *
 	 * * `ch_in`  equals `codepoint_begin_char` (as described in quoted_string_decoder), the decoder state is
-	 * updated to `decode_codepoint` and the function returns nothing
+	 * updated to `decode_utf16_seq_to_codepoint` and the function returns nothing
 	 *
 	 * * Otherwise, the function returns quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair
 	 *
@@ -302,7 +302,7 @@ namespace son
 		switch(ch_in)
 		{
 			case StringDecoder::codepoint_begin_char:
-					decoder.set_state(decoder_state::decode_codepoint);
+					decoder.set_state(decoder_state::decode_utf16_seq_to_codepoint);
 					return std::nullopt;
 
 			default:
@@ -340,7 +340,7 @@ namespace son
 	 * state string_escape {
 	 * }
 	 *
-	 * state decode_codepoint {
+	 * state decode_utf16_seq_to_codepoint {
 	 * }
 	 *
 	 * state before_second_surrogate_element_escseq {
@@ -353,14 +353,14 @@ namespace son
 	 * string_normal --> [*] : quoted_string_end_char ('"') [done]
 	 * string_normal --> string_normal : accept_char() [valid normal char]
 	 *
-	 * string_escape --> decode_codepoint : codepoint_begin_char ('u')
+	 * string_escape --> decode_utf16_seq_to_codepoint : codepoint_begin_char ('u')
 	 * string_escape --> string_normal : accept_escape_code() [valid escape]
 	 *
-	 * decode_codepoint --> string_normal : hexdigit::done
-	 * decode_codepoint --> before_second_surrogate_element_escseq : hexdigit::second_surrogate_required
+	 * decode_utf16_seq_to_codepoint --> string_normal : hexdigit::done
+	 * decode_utf16_seq_to_codepoint --> before_second_surrogate_element_escseq : hexdigit::second_surrogate_required
 	 *
 	 * before_second_surrogate_element_escseq --> at_second_surrogate_element_escseq : string_escape_char ('\\')
-	 * at_second_surrogate_element_escseq --> decode_codepoint : codepoint_begin_char ('u')
+	 * at_second_surrogate_element_escseq --> decode_utf16_seq_to_codepoint : codepoint_begin_char ('u')
 	 * @enduml
 	 *
 	 */
@@ -398,8 +398,8 @@ namespace son
 					{ return commit(*result); }
 					break;
 
-				case decoder_state::decode_codepoint:
-					if(auto const result = decode_quoted_string_state_decode_codepoint(decoder, ch_in))
+				case decoder_state::decode_utf16_seq_to_codepoint:
+					if(auto const result = decode_quoted_string_state_decode_utf16_seq_to_codepoint(decoder, ch_in))
 					{ return commit(*result); }
 					break;
 
