@@ -60,7 +60,7 @@ namespace son
 		illegal_char_in_string,
 
 		/**
-		 * \brief A character in the input buffer was not accepted (not an hexdigit)
+		 * \brief A character in the input buffer was not accepted
 		 */
 		invalid_input,
 
