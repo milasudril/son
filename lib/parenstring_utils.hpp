@@ -59,14 +59,16 @@ namespace son
 		 * \brief The operation was completed without errors
 		 */
 		done,
+
+		/**
+		 * \brief An invalid escape sequence appeared in the input buffer
+		 */
+		more_data_needed,
+
 		/**
 		 * \brief A character in the input buffer was not accepted
 		 */
 		illegal_char_in_string,
-		/**
-		 * \brief An invalid escape sequence appeared in the input buffer
-		 */
-		more_data_needed
 	};
 
 	/**

@@ -23,6 +23,11 @@ namespace son
 		done,
 
 		/**
+		 * \brief An invalid escape sequence appeared in the input buffer
+		 */
+		more_data_needed,
+
+		/**
 		 * \brief A character in the input buffer was not accepted
 		 */
 		illegal_char_in_string,
@@ -31,11 +36,6 @@ namespace son
 		 * \brief An invalid escape sequence appeared in the input buffer
 		 */
 		invalid_escape_sequence,
-
-		/**
-		 * \brief An invalid escape sequence appeared in the input buffer
-		 */
-		more_data_needed,
 
 		/**
 		 * \brief An invalid UTF-16 surrogate pair appeared in the input buffer
