@@ -2,6 +2,7 @@
 #define SON_UNICODE_UTILS_HPP
 
 #include "./exception.hpp"
+#include "./scope_utils.hpp"
 
 #include <cstdint>
 #include <array>
@@ -38,6 +39,8 @@ namespace son
 
 		constexpr std::expected<char32_t, result> make_codepoint(char16_t value)
 		{
+			auto at_exit = make_scope_exit([this]{reset();});
+
 			switch(m_cu_count)
 			{
 				case 0:
@@ -49,6 +52,7 @@ namespace son
 
 					std::get<0>(m_cus) = value;
 					++m_cu_count;
+					at_exit.release();
 					return std::unexpected{result::more_data_needed};
 
 				case 1:
