@@ -21,17 +21,25 @@ namespace son
 			second_code_unit_is_not_a_low_surrogate
 		};
 
+		static constexpr auto high_surrogate_min = static_cast<char16_t>(0xD800);
+		static constexpr auto high_surrogate_max = static_cast<char16_t>(0xDBFF);
+		static constexpr auto low_surrogate_min = static_cast<char16_t>(0xDC00);
+		static constexpr auto low_surrogate_max = static_cast<char16_t>(0xDFFF);
+
 		static constexpr bool is_high_surrogate(char16_t value)
-		{ return value >= 0xD800 && value <= 0xDBFF; }
+		{ return value >= high_surrogate_min && value <= high_surrogate_max; }
 
 		static constexpr bool is_low_surrogate(char16_t value)
-		{ return value >= 0xDC00 && value <= 0xDFFF; }
+		{ return value >= low_surrogate_min && value <= low_surrogate_max; }
 
 		static constexpr char32_t combine_surrogate_pair(std::array<char16_t, 2> pair)
 		{
 			auto const high = std::get<0>(pair);
 			auto const low = std::get<1>(pair);
-			return static_cast<char32_t>(0x10000 + ((high - 0xD800) << 10) + (low - 0xDC00));
+			return static_cast<char32_t>(
+					0x10000
+				+ ((high - high_surrogate_min) << 10)
+				+ (low - low_surrogate_min));
 		}
 
 		constexpr void reset()
