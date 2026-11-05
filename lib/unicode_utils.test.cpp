@@ -41,7 +41,7 @@ TESTCASE(son_unicode_utils_utf16_decoder_combine_surrogate_pair)
 			static_cast<char16_t>(0xDFFF)
 		}
 	);
-	EXPECT_EQ(result_b, 1114111);
+	EXPECT_EQ(result_b, static_cast<char32_t>(1114111));
 }
 
 TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_first_is_low_surrogate)
@@ -72,5 +72,18 @@ TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_second_code_unit_
 
 	auto const result_2 = decoder.try_to_make_codepoint(static_cast<char16_t>(0xD24));
 	EXPECT_EQ(result_2.error(), son::utf16_decoder::result::second_code_unit_is_not_a_low_surrogate);
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+}
+
+TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_outside_bmp)
+{
+	son::utf16_decoder decoder;
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+	auto const result_1 = decoder.try_to_make_codepoint(static_cast<char16_t>(0xD800));
+	EXPECT_EQ(result_1.error(), son::utf16_decoder::result::more_data_needed);
+	EXPECT_EQ(decoder.is_in_initial_state(), false);
+
+	auto const result_2 = decoder.try_to_make_codepoint(static_cast<char16_t>(0xDC00));
+	EXPECT_EQ(result_2.value(), static_cast<char32_t>(65536));
 	EXPECT_EQ(decoder.is_in_initial_state(), true);
 }
