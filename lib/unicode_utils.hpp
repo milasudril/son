@@ -130,6 +130,9 @@ namespace son
 			}
 		}
 
+		/**
+		 * \brief Queries whether or not the decoder is in its initial state
+		 */
 		constexpr bool is_in_initial_state() const
 		{ return m_cu_count == 0; }
 
