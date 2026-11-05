@@ -24,3 +24,22 @@ TESTCASE(son_unicode_utils_utf16_decoder_surrogate_intervals)
 		);
 	}
 }
+
+TESTCASE(son_unicode_utils_utf16_decoder_combine_surrogate_pair)
+{
+	auto const result_a = son::utf16_decoder::combine_surrogate_pair(
+		std::array{
+			static_cast<char16_t>(0xD800),
+			static_cast<char16_t>(0xDC00)
+		}
+	);
+	EXPECT_EQ(result_a, 65536);
+
+	auto const result_b = son::utf16_decoder::combine_surrogate_pair(
+		std::array{
+			static_cast<char16_t>(0xDBFF),
+			static_cast<char16_t>(0xDFFF)
+		}
+	);
+	EXPECT_EQ(result_b, 1114111);
+}
