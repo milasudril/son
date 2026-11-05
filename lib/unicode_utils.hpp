@@ -44,6 +44,16 @@ namespace son
 		};
 
 		/**
+		 * \brief The lowest code unit for a low surrogate
+		 */
+		static constexpr auto low_surrogate_min = static_cast<char16_t>(0xDC00);
+
+		/**
+		 * \brief The highest code unit for a low surrogate
+		 */
+		static constexpr auto low_surrogate_max = static_cast<char16_t>(0xDFFF);
+
+		/**
 		 * \brief The lowest code unit for a high surrogate
 		 */
 		static constexpr auto high_surrogate_min = static_cast<char16_t>(0xD800);
@@ -53,15 +63,6 @@ namespace son
 		 */
 		static constexpr auto high_surrogate_max = static_cast<char16_t>(0xDBFF);
 
-		/**
-		 * \brief The lowest code unit for a low surrogate
-		 */
-		static constexpr auto low_surrogate_min = static_cast<char16_t>(0xDC00);
-
-		/**
-		 * \brief The highest code unit for a low surrogate
-		 */
-		static constexpr auto low_surrogate_max = static_cast<char16_t>(0xDFFF);
 
 		/**
 		 * \brief Test whether or not value is a high surrogate
