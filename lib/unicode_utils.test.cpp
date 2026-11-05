@@ -2,7 +2,9 @@
 
 #include "./unicode_utils.hpp"
 
+#include <testfwk/death_test.hpp>
 #include <testfwk/testfwk.hpp>
+#include <memory>
 
 TESTCASE(son_unicode_utils_utf16_decoder_surrogate_intervals)
 {
@@ -97,4 +99,17 @@ TESTCASE(son_unicode_utils_utf16_decoder_reset)
 	EXPECT_EQ(decoder.is_in_initial_state(), false);
 	decoder.reset();
 	EXPECT_EQ(decoder.is_in_initial_state(), true);
+}
+
+TESTCASE(son_unicode_utils_utf16_decoder_corrupt_state)
+{
+	std::array<char, 6> bytes{0x02, 0x00, 0x01, 0x02, 0x03, 0x04};
+	auto const decoder = std::start_lifetime_as<son::utf16_decoder>(&bytes);
+	TestFwk::expect_death(
+		[&decoder]{
+			std::ignore = decoder->try_to_make_codepoint(static_cast<char16_t>(0xD800));
+		},
+		"son internal error: lib/./unicode_utils.hpp:129: Too many elements in UTF-16 codepoint\n",
+		SIGABRT
+	);
 }
