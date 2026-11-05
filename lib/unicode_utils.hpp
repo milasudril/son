@@ -28,7 +28,7 @@ namespace son
 		enum class result
 		{
 			/**
-			 * \brief The operation was not completed. Provide another code unite
+			 * \brief The operation was not completed. Rerun it with another code unit.
 			 */
 			more_data_needed,
 
