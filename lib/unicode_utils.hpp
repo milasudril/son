@@ -87,7 +87,7 @@ namespace son
 
 			return static_cast<char32_t>(
 					0x10000
-				+ ((high - high_surrogate_min) << 10)
+				+ (static_cast<uint32_t>(high - high_surrogate_min) << 10U)
 				+ (low - low_surrogate_min));
 		}
 
