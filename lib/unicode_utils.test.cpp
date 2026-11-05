@@ -52,3 +52,12 @@ TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_first_is_low_surr
 	EXPECT_EQ(result.error(), son::utf16_decoder::result::low_surrogate_as_first_code_unit);
 	EXPECT_EQ(decoder.is_in_initial_state(), true);
 }
+
+TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_char_within_bmp)
+{
+	son::utf16_decoder decoder;
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+	auto const result = decoder.try_to_make_codepoint(static_cast<char16_t>(0x4353));
+	EXPECT_EQ(result.value(), static_cast<char32_t>(0x4353));
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+}
