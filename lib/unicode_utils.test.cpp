@@ -43,3 +43,12 @@ TESTCASE(son_unicode_utils_utf16_decoder_combine_surrogate_pair)
 	);
 	EXPECT_EQ(result_b, 1114111);
 }
+
+TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_first_is_low_surrogate)
+{
+	son::utf16_decoder decoder;
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+	auto const result = decoder.try_to_make_codepoint(son::utf16_decoder::low_surrogate_min);
+	EXPECT_EQ(result.error(), son::utf16_decoder::result::low_surrogate_as_first_code_unit);
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+}

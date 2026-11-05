@@ -130,6 +130,9 @@ namespace son
 			}
 		}
 
+		constexpr bool is_in_initial_state() const
+		{ return m_cu_count == 0; }
+
 	private:
 		uint16_t m_cu_count{};
 		std::array<char16_t, 2> m_cus{};
