@@ -87,3 +87,14 @@ TESTCASE(son_unicode_utils_utf16_decoder_try_to_make_codepoint_outside_bmp)
 	EXPECT_EQ(result_2.value(), static_cast<char32_t>(65536));
 	EXPECT_EQ(decoder.is_in_initial_state(), true);
 }
+
+TESTCASE(son_unicode_utils_utf16_decoder_reset)
+{
+	son::utf16_decoder decoder;
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+	auto const result_1 = decoder.try_to_make_codepoint(static_cast<char16_t>(0xD800));
+	EXPECT_EQ(result_1.error(), son::utf16_decoder::result::more_data_needed);
+	EXPECT_EQ(decoder.is_in_initial_state(), false);
+	decoder.reset();
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+}
