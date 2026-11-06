@@ -12,7 +12,7 @@ namespace son
 	 *
 	 * A **parenstring** is a string encoding format designed to minimize the need for escape
 	 * sequences. This is achieved by using matched parentheses as delimiters. The assumption is that
-	 * most text will have matching pairs of parentheses. If not an escape character can be used to
+	 * most text will have matching pairs of parentheses. If not, an escape character can be used to
 	 * write the mismatched parenthesis
 	 *
 	 * * A begin character (typically `(`) increments the parenthesis nesting level
@@ -23,13 +23,17 @@ namespace son
 	 *
 	 * To encode the begin and end character, when it would result in mismatched begin/end characters,
 	 * a corresponding escape sequence is used. Typically <code>\\</code> is used as the escape
-	 * character. In that case, the following escape sequences are recognised
+	 * character, and `-` is used as escape code for the escape character itself. Using these symbols
+	 * the following escape sequences are recognised
 	 *
 	 * | Sequences     | Interpretation |
 	 * |---------------|----------------|
 	 * | `\(` and `\)` | The delimiter `(` or `)`, is treated as a literal character |
+	 * | `\-`          | A single <code>\\</code> |
 	 * | General escape sequences (`\X`) | The sequence is treated literally |
 	 *
+	 * That is, the escape character is only treated as such when it starts an recognised escape
+	 * sequence.
 	 *
 	 * A use-case for mismatched parentheses is a half-open interval. Using
 	 * `(`, `)` and <code>\\</code>, it could be written as
@@ -92,6 +96,11 @@ namespace son
 		 * \brief The character used to end a parenstring, typically `)`
 		 */
 		{T::parenstring_end_char} -> std::same_as<char const&>;
+
+		/**
+		 * \brief The character used for the escape character escape code, typically `-`
+		 */
+		{T::parenstring_escape_char_escape_code} -> std::same_as<char const&>;
 
 		/**
 		 * \brief Should store `ch_in` in an internal buffer, if it is accepted
@@ -207,13 +216,20 @@ namespace son
 	 *    `string_normal`, and the function returns nothing. Otherwise, the state is kept and the
 	 *    function returns parenstring_decode_result::illegal_char_in_string.
 	 *
+	 * * `ch_in` equals StringDecoder::parenstring_escape_char_escape_code (as described in
+	 *    parenstring_decoder), the decoder is asked to
+	 *    accept StringDecoder::string_escape_char (as described in parenstring_decoder). If it does,
+	 *    the decoder state is updated to `string_normal`, and the function returns nothing. Otherwise
+	 *    the state is kept and the function returns
+	 *    parenstring_decode_result::illegal_char_in_string.
+	 *
 	 * * In any other case the following happens in sequence
 	 *
-	 *   1. decoder is asked to accept the escpae char. If it doesn't, the function returns
-	 *      parenstring_decode_result::illegal_char_in_string
+	 *   1. decoder is asked to accept the escape char. If it doesn't, the function returns
+	 *      parenstring_decode_result::illegal_char_in_string.
 	 *
 	 *   2. decoder is asked to accept `ch_in`. If it doesn't, the function returns
-	 *      parenstring_decode_result::illegal_char_in_string
+	 *      parenstring_decode_result::illegal_char_in_string.
 	 *
 	 *   3. the state is updated to decoder_state::string_normal, and the function returns nothing
 	 *
@@ -231,6 +247,13 @@ namespace son
 			case StringDecoder::parenstring_begin_char:
 			case StringDecoder::parenstring_end_char:
 				if(!decoder.accept_char(ch_in))
+				{ return parenstring_decode_result::illegal_char_in_string; }
+
+				decoder.set_state(decoder_state::string_normal);
+				return std::nullopt;
+
+			case StringDecoder::parenstring_escape_char_escape_code:
+				if(!decoder.accept_char(StringDecoder::string_escape_char))
 				{ return parenstring_decode_result::illegal_char_in_string; }
 
 				decoder.set_state(decoder_state::string_normal);
@@ -259,8 +282,10 @@ namespace son
 	 * \param decoder Reference to the stateful decoder instance.
 	 * \return A parenstring_decode_result
 	 *         - parenstring_decode_result::done if the parenstring terminated successfully.
-	 *         - parenstring_decode_result::illegal_char_in_string if an invalid character or unexpected sequence was encountered.
-	 *         - parenstring_decode_result::more_data_needed if the input range was exhausted before the parenstring terminated.
+	 *         - parenstring_decode_result::illegal_char_in_string if an invalid character or
+	 *           unexpected sequence was encountered.
+	 *         - parenstring_decode_result::more_data_needed if the input range was exhausted before
+	 *           the parenstring terminated.
 	 *
 	 * \ingroup parenstring
 	 *
