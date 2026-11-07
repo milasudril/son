@@ -31,12 +31,10 @@ namespace son
 
 	constexpr std::expected<std::byte, bad_digit_tag> to_nibble(char digit)
 	{
-		if(digit >= 'a' && digit <= 'z')
-		{ digit &= static_cast<char>(0b1101'1111);}
-
 		if(digit >= '0' && digit <= '9')
 		{ return static_cast<std::byte>(digit - '0');}
 
+		digit &= static_cast<char>(0b1101'1111);
 
 		if(digit >= 'A' && digit <= 'F')
 		{ return static_cast<std::byte>(10 + digit - 'A');}
