@@ -103,8 +103,8 @@ TESTCASE(son_unicode_utils_utf16_decoder_reset)
 
 TESTCASE(son_unicode_utils_utf16_decoder_corrupt_state)
 {
-	std::array<char, 6> bytes{0x02, 0x00, 0x01, 0x02, 0x03, 0x04};
-	auto const decoder = std::start_lifetime_as<son::utf16_decoder>(&bytes);
+	std::array<uint16_t, 6> data{0x02, 0x00, 0x01, 0x02, 0x03, 0x04};
+	auto const decoder = std::start_lifetime_as<son::utf16_decoder>(&data);
 	TestFwk::expect_death(
 		[&decoder]{
 			std::ignore = decoder->try_to_make_codepoint(static_cast<char16_t>(0xD800));
