@@ -272,7 +272,7 @@ namespace son
 	}
 
 	/**
-	 * \brief Decodes a parenstring from the input range managed by the decoder.
+	 * \brief Decodes a parenstring using decoder, which manage the decoder state and input buffer
 	 *
 	 * This function iterates through the input range provided by \p decoder, dispatching
 	 * character processing based on the current decoder state (`string_normal` or `string_escape`).

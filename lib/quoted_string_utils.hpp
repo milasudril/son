@@ -311,7 +311,7 @@ namespace son
 	}
 
 	/**
-	 * \brief Decodes a quoted string using the provided stateful decoder
+	 * \brief Decodes a quoted string using decoder, which manage the decoder state and input buffer
 	 *
 	 * This function iterates over the input range obtained from `decoder.get_input_range()`,
 	 * processing characters according to the current decoder state (such as normal text, escape
