@@ -171,6 +171,17 @@ TESTCASE(son_numconv_hexdigit_sequence_decoder_decode_full_value)
 	EXPECT_EQ(res.value(),  0x12345678);
 }
 
+TESTCASE(son_numconv_hexdigit_sequence_decoder_bad_input)
+{
+	son::hexdigit_sequence_decoder<uint32_t, '.'> decoder;
+	EXPECT_EQ(decoder.endmarker, '.');
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+
+	auto const res = decoder.try_to_make_value('l');
+	EXPECT_EQ(res.error(),  son::hexdigit_sequence_decode_result::invalid_input);
+	EXPECT_EQ(decoder.is_in_initial_state(), true);
+}
+
 TESTCASE(son_numconv_hexdigit_sequence_decoder_reset)
 {
 	son::hexdigit_sequence_decoder<uint32_t, '.'> decoder;
