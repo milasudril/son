@@ -140,6 +140,48 @@ namespace son
 		uint16_t m_cu_count{};
 		std::array<char16_t, 2> m_cus{};
 	};
+
+	/**
+	 * \brief Encodes value into buffer as UTF-8
+	 * \ingroup unicode_utils
+	 * \return A number representing the number of bytes written to buffer, or zero if value
+	 *         is outside the valid range
+	 */
+	template<class OutputBuffer>
+	constexpr size_t encode_as_utf8(char32_t value, OutputBuffer& buffer)
+	{
+		using value_type = OutputBuffer::value_type;
+		if (value <= 0x7F)
+		{
+			buffer.push_back(static_cast<value_type>(value));
+			return 1;
+		}
+
+		if (value <= 0x7FF)
+		{
+			buffer.push_back(static_cast<value_type>(0xC0U | (value >> 6U)));
+			buffer.push_back(static_cast<value_type>(0x80U | (value & 0x3FU)));
+			return 2;
+		}
+
+		if (value <= 0xFFFF)
+		{
+			buffer.push_back(static_cast<value_type>(0xE0U | (value >> 12U)));
+			buffer.push_back(static_cast<value_type>(0x80U | ((value >> 6U) & 0x3FU)));
+			buffer.push_back(static_cast<value_type>(0x80U | (value & 0x3FU)));
+			return 3;
+    }
+
+		if (value <= 0x10FFFF)
+		{
+			buffer.push_back(static_cast<value_type>(0xF0U | (value >> 18U)));
+			buffer.push_back(static_cast<value_type>(0x80U | ((value >> 12U) & 0x3FU)));
+			buffer.push_back(static_cast<value_type>(0x80U | ((value >> 6U) & 0x3FU)));
+			buffer.push_back(static_cast<value_type>(0x80U | (value & 0x3FU)));
+			return 4;
+		}
+		return 0;
+	}
 };
 
 #endif

@@ -1,6 +1,7 @@
 //@	{"target":{"name":"unicode_utils.test"}}
 
 #include "./unicode_utils.hpp"
+#include "testfwk/validation.hpp"
 
 #include <testfwk/death_test.hpp>
 #include <testfwk/testfwk.hpp>
@@ -113,3 +114,89 @@ TESTCASE(son_unicode_utils_utf16_decoder_corrupt_state)
 		SIGABRT
 	);
 }
+
+TESTCASE(son_unicode_utils_encode_as_utf8_ascii_values)
+{
+	{
+		std::string buffer;
+		auto const res = son::encode_as_utf8(static_cast<char32_t>(0), buffer);
+		EXPECT_EQ(res, 1);
+		EXPECT_EQ(buffer.front(), '\0');
+	}
+
+	{
+		std::string buffer;
+		std::string expected;
+		for(char32_t k = 1; k != 128; ++k)
+		{
+			expected += static_cast<char>(k);
+			auto const res = son::encode_as_utf8(k, buffer);
+			EXPECT_EQ(buffer, expected);
+			EXPECT_EQ(res, 1);
+		}
+	}
+}
+
+TESTCASE(son_unicode_utils_encode_as_utf8_two_byte_values)
+{
+	std::string buffer;
+	std::string expected;
+	for(char32_t k = 128; k != 0x800; ++k)
+	{
+		expected.push_back(static_cast<char>(0xC0U | (k >> 6U)));
+		expected.push_back(static_cast<char>(0x80U | (k & 0x3FU)));
+		auto const res = son::encode_as_utf8(k, buffer);
+		EXPECT_EQ(res, 2);
+		EXPECT_EQ(buffer, expected);
+	}
+}
+
+TESTCASE(son_unicode_utils_encode_as_utf8_three_byte_values)
+{
+	std::string buffer;
+	std::string expected;
+	for(char32_t k = 0x800; k != 0x10000; ++k)
+	{
+		expected.push_back(static_cast<char>(0xE0U | (k >> 12U)));
+		expected.push_back(static_cast<char>(0x80U | ((k >> 6U) & 0x3FU)));
+		expected.push_back(static_cast<char>(0x80U | (k & 0x3FU)));
+		auto const res = son::encode_as_utf8(k, buffer);
+		EXPECT_EQ(res, 3);
+		EXPECT_EQ(buffer, expected);
+	}
+}
+
+TESTCASE(son_unicode_utils_encode_as_utf8_four_byte_values)
+{
+	std::string expected;
+	std::string buffer;
+	for(char32_t k = 0x10000; k != 0x110000; ++k)
+	{
+		if((k % 65536) == 0)
+		{
+			expected.clear();
+			buffer.clear();
+		}
+		expected.push_back(static_cast<char>(0xF0U | (k >> 18U)));
+		expected.push_back(static_cast<char>(0x80U | ((k >> 12U) & 0x3FU)));
+		expected.push_back(static_cast<char>(0x80U | ((k >> 6U) & 0x3FU)));
+		expected.push_back(static_cast<char>(0x80U | (k & 0x3FU)));
+		auto const res = son::encode_as_utf8(k, buffer);
+		EXPECT_EQ(res, 4);
+		EXPECT_EQ(buffer, expected);
+	}
+}
+
+TESTCASE(son_unicode_utils_encode_as_utf8_input_out_of_range)
+{
+	std::string expected{"foobar"};
+	auto buffer = expected;
+	for(uint64_t k = 0x110000; k <= 0xffff'ffff; ++k)
+	{
+		auto const res = son::encode_as_utf8(static_cast<char32_t>(k), buffer);
+		EXPECT_EQ(res, 0);
+		EXPECT_EQ(buffer, expected);
+	}
+}
+
+
