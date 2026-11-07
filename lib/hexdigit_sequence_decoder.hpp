@@ -4,12 +4,19 @@
 #include "./scope_utils.hpp"
 #include "lib/exception.hpp"
 
-#include <bit>
 #include <expected>
 #include <climits>
 
 namespace son
 {
+	/**
+	 * \defgroup numconv_utils Utilities for conversion between strings and numbers
+	 */
+
+	/**
+	 * \brief The result of trying to make a value from a hexdigit
+	 * \ingroup numconv_utils
+	 */
 	enum class hexdigit_sequence_decode_result{
 		/**
 			* \brief The operation was not completed. Rerun it with another code unit.
@@ -17,18 +24,26 @@ namespace son
 		more_data_needed,
 
 		/**
-			* \brief Error code used when the input character is not the EndMarker or a valid hexdigit
+			* \brief Error code used when the input character is not the endmarker or a valid hexdigit
 			*/
 		invalid_input,
 
 		/**
-			* \brief Error code used when EndMarker appears at odd index
+			* \brief Error code used when Endmarker appears at odd index
 			*/
 		incomplete_byte
 	};
 
+	/**
+	 * \brief Tag used to denote that to_nibble failed
+	 * \ingroup numconv_utils
+	 */
 	struct bad_digit_tag{};
 
+	/**
+	 * \brief Converts digit into a nibble (case insensitive)
+	 * \ingroup numconv_utils
+	 */
 	constexpr std::expected<std::byte, bad_digit_tag> to_nibble(char digit)
 	{
 		if(digit >= '0' && digit <= '9')
@@ -42,7 +57,14 @@ namespace son
 		return std::unexpected{bad_digit_tag{}};
 	}
 
-	template<class TargetType, char EndMarker = '.'>
+	/**
+	 * \brief Decodes a hexdigit sequence into a number
+	 * \tparam TargetType The type of the output value such as uint32_t
+	 * \tparam Endmarker The symbol used to terminate a sequence that is shorter than `2*sizeof(T)`
+	 *                   digigts
+	 * \ingroup numconv_utils
+	 */
+	template<class TargetType, char Endmarker>
 	class hexdigit_sequence_decoder
 	{
 	public:
@@ -50,20 +72,27 @@ namespace son
 
 		using result = hexdigit_sequence_decode_result;
 
-		constexpr void reset()
-		{
-			*this = hexdigit_sequence_decoder{};
-		}
+		static constexpr auto endmarker = Endmarker;
 
+		/**
+		 * \brief Resets the state of the decoder
+		 */
+		constexpr void reset()
+		{ *this = hexdigit_sequence_decoder{}; }
+
+		/**
+		 * \brief Tries to convert digit into a value
+		 * \return The corresponding value, or a result if the operation was not successful
+		 */
 		constexpr std::expected<TargetType, result> try_to_make_value(char digit)
 		{
 			auto at_exit = make_scope_exit([this]{reset();});
-			if(digit == EndMarker)
+			if(digit == endmarker)
 			{
 				if(m_elem_count%8 != 0)
 				{ return std::unexpected{result::incomplete_byte}; }
 
-				return std::byteswap(m_value);
+				return m_value;
 			}
 
 			if(m_elem_count < 8*sizeof(TargetType))
@@ -71,10 +100,14 @@ namespace son
 				auto const val = to_nibble(digit);
 				if(!val.has_value())
 				{ return std::unexpected{result::invalid_input}; }
-				m_value |= (to_nibble(digit) << m_elem_count);
-				m_elem_count += 4;
 
-				at_exit.reset();
+				m_value = (m_value << 4) | static_cast<TargetType>(*val);
+				m_elem_count += 4;
+				if(m_elem_count == 8*sizeof(TargetType))
+				{ return m_value; }
+
+				at_exit.release();
+				return std::unexpected{result::more_data_needed};
 			}
 			raise_internal_error("Too many digits in hexdigit sequence");
 		}
@@ -83,7 +116,7 @@ namespace son
 		 * \brief Queries whether or not the decoder is in its initial state
 		 */
 		constexpr bool is_in_initial_state() const
-		{ return m_elem_count == 0; }
+		{ return m_elem_count == 0 && m_elem_count == 0; }
 
 	private:
 		TargetType m_value{};

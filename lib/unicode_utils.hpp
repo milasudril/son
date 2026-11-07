@@ -23,7 +23,7 @@ namespace son
 	public:
 
 		/**
-		 * \brief Result of trying to make a codepoint
+		 * \brief The result of trying to make a codepoint
 		 */
 		enum class result
 		{
