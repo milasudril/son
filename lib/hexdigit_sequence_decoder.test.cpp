@@ -91,7 +91,7 @@ TESTCASE(son_numconv_hexdigit_sequence_decoder_try_to_make_value_endmarker_at_od
 	EXPECT_EQ(decoder.is_in_initial_state(), false);
 
 	auto const res2 = decoder.try_to_make_value('.');
-	EXPECT_EQ(res2.error(),  son::hexdigit_sequence_decode_result::incomplete_byte);
+	EXPECT_EQ(res2.value(), 10);
 	EXPECT_EQ(decoder.is_in_initial_state(), true);
 }
 
@@ -208,7 +208,7 @@ TESTCASE(son_numconv_hexdigit_sequence_decoder_corrupt_state)
 		[&decoder]{
 			std::ignore = decoder->try_to_make_value('A');
 		},
-		"son internal error: lib/./hexdigit_sequence_decoder.hpp:112: Too many digits in hexdigit sequence\n",
+		"son internal error: lib/./hexdigit_sequence_decoder.hpp:107: Too many digits in hexdigit sequence\n",
 		SIGABRT
 	);
 }

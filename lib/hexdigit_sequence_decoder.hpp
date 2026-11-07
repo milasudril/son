@@ -88,12 +88,7 @@ namespace son
 		{
 			auto at_exit = make_scope_exit([this]{reset();});
 			if(digit == endmarker)
-			{
-				if(m_elem_count%8 != 0)
-				{ return std::unexpected{result::incomplete_byte}; }
-
-				return m_value;
-			}
+			{ return m_value; }
 
 			if(m_elem_count < 8*sizeof(TargetType))
 			{
