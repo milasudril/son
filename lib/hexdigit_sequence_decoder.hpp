@@ -44,12 +44,12 @@ namespace son
 	 * \brief Converts digit into a nibble (case insensitive)
 	 * \ingroup numconv_utils
 	 */
-	constexpr std::expected<std::byte, bad_digit_tag> to_nibble(char digit)
+	constexpr std::expected<std::byte, bad_digit_tag> to_nibble(unsigned char digit)
 	{
 		if(digit >= '0' && digit <= '9')
 		{ return static_cast<std::byte>(digit - '0');}
 
-		digit &= static_cast<char>(0b1101'1111);
+		digit &= static_cast<unsigned char>(0b1101'1111);
 
 		if(digit >= 'A' && digit <= 'F')
 		{ return static_cast<std::byte>(10 + digit - 'A');}
@@ -97,11 +97,11 @@ namespace son
 
 			if(m_elem_count < 8*sizeof(TargetType))
 			{
-				auto const val = to_nibble(digit);
+				auto const val = to_nibble(static_cast<unsigned char>(digit));
 				if(!val.has_value())
 				{ return std::unexpected{result::invalid_input}; }
 
-				m_value = (m_value << 4) | static_cast<TargetType>(*val);
+				m_value = (m_value << 4U) | static_cast<TargetType>(*val);
 				m_elem_count += 4;
 				if(m_elem_count == 8*sizeof(TargetType))
 				{ return m_value; }
