@@ -1,14 +1,14 @@
 #ifndef SON_GENERIC_VALUE_HPP
 #define SON_GENERIC_VALUE_HPP
 
-#include "./clear_nodes_visitor.hpp"
-#include "./node_visitor_adaptor.hpp"
-#include "./with_subtype_id.hpp"
-#include "./clone_visitor.hpp"
 
+#include "lib/core/named_object.hpp"
 #include "lib/core/variant_utils.hpp"
 #include "lib/core/template_param_pack.hpp"
 #include "lib/core/exception.hpp"
+#include "lib/treewalker/clear_nodes_visitor.hpp"
+#include "lib/treewalker/node_visitor_adaptor.hpp"
+#include "lib/treewalker/clone_visitor.hpp"
 
 #include <algorithm>
 #include <type_traits>
@@ -75,6 +75,9 @@ namespace son
 		RetType* m_value{};
 		lookup_error_code m_err_code;
 	};
+
+	template<class SubtypeIdType, class Base>
+	using with_subtype_id = named_object<SubtypeIdType, Base>;
 
 	template<class GenericValueTraits>
 	class generic_value

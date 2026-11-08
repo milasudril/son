@@ -2,7 +2,7 @@
 
 #include "./node_visitor_adaptor.hpp"
 #include "./container_proxy.hpp"
-#include "./with_subtype_id.hpp"
+#include "lib/core/named_object.hpp"
 
 #include <ranges>
 #include <testfwk/death_test.hpp>
@@ -20,7 +20,7 @@ namespace
 	template<class KeyType = std::string>
 	struct test_generic_value
 	{
-		using object = son::with_subtype_id<std::string, std::map<KeyType, test_generic_value>>;
+		using object = son::named_object<std::string, std::map<KeyType, test_generic_value>>;
 
 		using value_type = std::variant<
 			int,
@@ -199,7 +199,7 @@ TESTCASE(son_to_visit_node_result_junk_leads_to_sigabrt)
 				completed_mock
 			);
 		},
-		"son internal error: lib/./node_visitor_adaptor.hpp:107: Invalid return value from node visitor\n",
+		"son internal error: lib/treewalker/./node_visitor_adaptor.hpp:107: Invalid return value from node visitor\n",
 		SIGABRT
 	);
 }

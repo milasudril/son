@@ -127,7 +127,7 @@ namespace son
 			son::value_visitation_context const& /*unused*/
 		)
 		{
-			m_current_subtype_id = typename objcontainer_out::subtype_id_type{
+			m_current_subtype_id = typename objcontainer_out::name_type{
 				std::remove_const_t<T>(std::from_range_t{}, id.active_range())
 			};
 			id.pop_active_elements();
@@ -300,7 +300,7 @@ namespace son
 	private:
 		std::vector<context> m_contexts;
 		GenericValueOut* m_value_after_key{nullptr};
-		objcontainer_out::subtype_id_type m_current_subtype_id;
+		objcontainer_out::name_type m_current_subtype_id;
 	};
 
 	template<class SrcValueTemplateParamPack, class GenericValueOut>

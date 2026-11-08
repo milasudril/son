@@ -1,7 +1,6 @@
 //@	{"target":{"name":"clear_nodes_visitor.test"}}
 
 #include "./clear_nodes_visitor.hpp"
-#include "lib/node_visitor_adaptor.hpp"
 
 #include <testfwk/testfwk.hpp>
 #include <testfwk/mock_util.hpp>

@@ -1,9 +1,10 @@
 //@	{"target":{"name":"clone_visitor.test"}}
 
 #include "./clone_visitor.hpp"
-#include "./with_subtype_id.hpp"
 #include "./container_proxy.hpp"
 #include "./node_visitor_adaptor.hpp"
+
+#include "lib/core/named_object.hpp"
 
 #include <map>
 #include <testfwk/testfwk.hpp>
@@ -19,7 +20,7 @@ namespace
 
 		using key_type = std::variant<int, std::string>;
 
-		using object = son::with_subtype_id<
+		using object = son::named_object<
 			std::string,
 			std::map<key_type, test_generic_value_in>
 		>;
@@ -40,7 +41,7 @@ namespace
 
 	struct test_generic_value_out
 	{
-		using object = son::with_subtype_id<
+		using object = son::named_object<
 			std::string,
 			std::map<std::variant<int, std::string>, test_generic_value_out>
 		>;

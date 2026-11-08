@@ -286,7 +286,7 @@ namespace son
 				key_node
 			>,
 			wrap_variant_element_t<
-				wrap_in_variant_t<typename object::subtype_id_type>,
+				wrap_in_variant_t<typename object::name_type>,
 				subtype_id_node
 			>
 		>;
