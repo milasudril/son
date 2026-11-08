@@ -208,7 +208,7 @@ TESTCASE(son_numconv_hexdigit_sequence_decoder_corrupt_state)
 		[&decoder]{
 			std::ignore = decoder->try_to_make_value('A');
 		},
-		"son internal error: lib/./hexdigit_sequence_decoder.hpp:107: Too many digits in hexdigit sequence\n",
+		"son internal error: lib/parser/./hexdigit_sequence_decoder.hpp:107: Too many digits in hexdigit sequence\n",
 		SIGABRT
 	);
 }
