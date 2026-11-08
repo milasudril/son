@@ -1,7 +1,6 @@
 #ifndef SON_STRINGCONV_HPP
 #define SON_STRINGCONV_HPP
 
-#include <algorithm>
 #include <string_view>
 
 /**
@@ -40,15 +39,29 @@ namespace son
 	concept delimited_string_decoder = requires(T& decoder, char ch_in)
 	{
 		/**
-		 * \brief The character used to start an escape sequence, typically `\`
+		 * \brief Should determine whether or not ch_in is a delimiter
 		 */
-		{T::string_delimiters} -> std::same_as<std::string_view&>;
+		{decoder.is_string_delimiter(ch_in)} -> std::same_as<bool>;
 
 		/**
 		 * \brief Should store `ch_in` in an internal buffer, if it is accepted
 		 * \return true if `ch_in` was accepted, otherwise `false`
 		 */
 		{decoder.accept_char(ch_in)} -> std::same_as<bool>;
+
+		/**
+		 * \brief Returns the current input range
+		 */
+		{decoder.get_input_range()};
+
+		/**
+		 * \brief Should update the input range in decoder
+		 */
+		{
+			decoder.set_input_range(
+				std::declval<decltype(decoder.get_input_range())>()
+			)
+		} -> std::same_as<void>;
 	};
 
 	/**
@@ -72,7 +85,7 @@ namespace son
 		while(first != last)
 		{
 			auto const ch_in = *first;
-			if(std::ranges::any_of(StringDecoder::string_delimiters, ch_in))
+			if(decoder.is_string_delimiter(ch_in))
 			{ return commit(delimited_string_decode_result::done); }
 
 			if(!decoder.accept_char(ch_in))

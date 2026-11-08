@@ -109,6 +109,20 @@ namespace son
 		{decoder.accept_char(ch_in)} -> std::same_as<bool>;
 
 		/**
+		 * \brief Returns the current input range
+		 */
+		{decoder.get_input_range()};
+
+		/**
+		 * \brief Should update the input range in decoder
+		 */
+		{
+			decoder.set_input_range(
+				std::declval<decltype(decoder.get_input_range())>()
+			)
+		} -> std::same_as<void>;
+
+		/**
 		 * \brief Should increment the parenthesis nesting count
 		 */
 		{decoder.inc_paren_count()} -> std::same_as<void>;

@@ -116,6 +116,20 @@ namespace son
 		 */
 		{decoder.get_state()} -> std::same_as<typename T::state>;
 
+		/**
+		 * \brief Returns the current input range
+		 */
+		{decoder.get_input_range()};
+
+		/**
+		 * \brief Should update the input range in decoder
+		 */
+		{
+			decoder.set_input_range(
+				std::declval<decltype(decoder.get_input_range())>()
+			)
+		} -> std::same_as<void>;
+
 		/** \name stringdec_state
 		 *  The different state decoder can be in
 		 */
@@ -264,8 +278,8 @@ namespace son
 	 */
 	template<quoted_string_decoder StringDecoder>
 	constexpr std::optional<quoted_string_decode_result> decode_quoted_string_state_before_second_surrogate_element_escseq(
-			StringDecoder& decoder,
-			char ch_in
+		StringDecoder& decoder,
+		char ch_in
 	)
 	{
 		using decoder_state = StringDecoder::state;
@@ -302,11 +316,11 @@ namespace son
 		switch(ch_in)
 		{
 			case StringDecoder::codepoint_begin_char:
-					decoder.set_state(decoder_state::decode_utf16_seq_to_codepoint);
-					return std::nullopt;
+				decoder.set_state(decoder_state::decode_utf16_seq_to_codepoint);
+				return std::nullopt;
 
 			default:
-					return quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair;
+				return quoted_string_decode_result::illformed_escaped_utf16_surrogate_pair;
 		}
 	}
 
