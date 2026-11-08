@@ -4,14 +4,15 @@
 #include <string_view>
 
 /**
- * \defgroup qstrings Functionality related to quoted strings
+ * \defgroup delimstring Delimited strings
+ * \brief Functionality related to delimited strings
  */
 
 namespace son
 {
 	/**
 	 * \brief The result of a decoding a quoted string
-	 * \ingroup qstrings
+	 * \ingroup delimstring
 	 */
 	enum class delimited_string_decode_result
 	{
@@ -33,7 +34,7 @@ namespace son
 
 	/**
 	 * \brief Requirements on a class that can manage the state during the decoding of a string
-	 * \ingroup qstrings
+	 * \ingroup delimstring
 	 */
 	template<class T>
 	concept delimited_string_decoder = requires(T& decoder, char ch_in)
@@ -66,6 +67,7 @@ namespace son
 
 	/**
 	 * \brief Decodes a delimeted string using decoder, which manage the decoder state and input buffer
+	 * \ingroup delimstring
 	 */
 	template<delimited_string_decoder StringDecoder>
 	constexpr delimited_string_decode_result decode_delimited_string(StringDecoder& decoder)

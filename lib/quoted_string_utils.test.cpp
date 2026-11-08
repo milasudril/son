@@ -407,7 +407,7 @@ TESTCASE(son_quoted_string_utils_state_decode_utf16_seq_to_codepoint_wrong_retur
 		[&decoder]{
 			std::ignore = son::decode_quoted_string(decoder);
 		},
-		"son internal error: lib/./quoted_string_utils.hpp:264: Unexpected return value from accept_codepoint_hexdigit\n",
+		"son internal error: lib/./quoted_string_utils.hpp:265: Unexpected return value from accept_codepoint_hexdigit\n",
 		SIGABRT
 	);
 }
@@ -536,7 +536,7 @@ TESTCASE(son_quoted_string_utils_state_invalid)
 		[&decoder]{
 			std::ignore = son::decode_quoted_string(decoder);
 		},
-		"son internal error: lib/./quoted_string_utils.hpp:441: Unexpected return value from get_state",
+		"son internal error: lib/./quoted_string_utils.hpp:442: Unexpected return value from get_state",
 		SIGABRT
 	);
 }

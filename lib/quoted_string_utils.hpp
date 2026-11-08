@@ -6,7 +6,8 @@
 #include <optional>
 
 /**
- * \defgroup qstrings Functionality related to quoted strings
+ * \defgroup qstrings Quoted strings
+ * \brief Functionality related to quoted strings
  */
 
 namespace son

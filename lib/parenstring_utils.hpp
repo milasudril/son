@@ -8,7 +8,8 @@
 namespace son
 {
 	/**
-	 * \defgroup parenstring Functionality related to strings in parenthesis
+	 * \defgroup parenstring Parenstrings
+	 * \brief Functionality related to strings in parenthesis
 	 *
 	 * A **parenstring** is a string encoding format designed to minimize the need for escape
 	 * sequences. This is achieved by using matched parentheses as delimiters. The assumption is that
