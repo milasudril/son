@@ -4,7 +4,8 @@
 #include "./variant_utils.hpp"
 #include "./container_proxy.hpp"
 #include "./common_traits.hpp"
-#include "./exception.hpp"
+
+#include "lib/core/exception.hpp"
 
 #include <type_traits>
 #include <ranges>

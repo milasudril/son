@@ -3,9 +3,9 @@
 
 #include "./value_sink_ref.hpp"
 #include "./template_param_pack.hpp"
-#include "./exception.hpp"
 #include "./sequence_container.hpp"
 #include "./node_visitor_adaptor.hpp"
+#include "lib/core/exception.hpp"
 
 namespace son
 {

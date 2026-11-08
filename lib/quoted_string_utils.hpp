@@ -1,7 +1,7 @@
 #ifndef SON_STRINGCONV_HPP
 #define SON_STRINGCONV_HPP
 
-#include "./exception.hpp"
+#include "lib/core/exception.hpp"
 
 #include <optional>
 

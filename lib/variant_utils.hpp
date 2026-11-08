@@ -1,8 +1,9 @@
 #ifndef SON_VARIANT_UTILS_HPP
 #define SON_VARIANT_UTILS_HPP
 
-#include "./exception.hpp"
 #include "./common_traits.hpp"
+
+#include "lib/core/exception.hpp"
 
 #include <cstddef>
 #include <variant>

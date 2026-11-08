@@ -1,8 +1,8 @@
 #ifndef SON_HEXDIGIT_SEQUENCE_DECODER_HPP
 #define SON_HEXDIGIT_SEQUENCE_DECODER_HPP
 
-#include "./scope_utils.hpp"
-#include "lib/exception.hpp"
+#include "lib/core/scope_utils.hpp"
+#include "lib/core/exception.hpp"
 
 #include <expected>
 #include <climits>

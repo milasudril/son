@@ -1,8 +1,8 @@
 #ifndef SON_UNICODE_UTILS_HPP
 #define SON_UNICODE_UTILS_HPP
 
-#include "./exception.hpp"
-#include "./scope_utils.hpp"
+#include "lib/core/exception.hpp"
+#include "lib/core/scope_utils.hpp"
 
 #include <cstdint>
 #include <array>

@@ -1,7 +1,7 @@
 #ifndef SON_PARENSTRING_UTILS_HPP
 #define SON_PARENSTRING_UTILS_HPP
 
-#include "./exception.hpp"
+#include "lib/core/exception.hpp"
 
 #include <optional>
 
