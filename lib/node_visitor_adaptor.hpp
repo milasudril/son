@@ -1,11 +1,11 @@
 #ifndef SON_NODE_VISITOR_ADAPTOR_HPP
 #define SON_NODE_VISITOR_ADAPTOR_HPP
 
-#include "./variant_utils.hpp"
 #include "./container_proxy.hpp"
-#include "./common_traits.hpp"
 
 #include "lib/core/exception.hpp"
+#include "lib/core/variant_utils.hpp"
+#include "lib/core/common_traits.hpp"
 
 #include <type_traits>
 #include <ranges>
