@@ -24,8 +24,8 @@ namespace son
 			m_value{make_result(std::type_identity<callback_result::value_type>{}, res)},
 			m_error_description{
 				is_error(res)?
-					[](value_type res, std::string_view lang_id) noexcept {
-						return to_string_view(make_result(std::type_identity<Result>{}, res), lang_id);
+					[](value_type res) noexcept {
+						return to_string_view(make_result(std::type_identity<Result>{}, res));
 					}:
 					nullptr
 			}
@@ -37,15 +37,15 @@ namespace son
 		constexpr bool has_error_condition() const
 		{ return m_error_description != nullptr; }
 
-		constexpr std::string_view error_description(std::string_view lang_id) const noexcept
-		{ return m_error_description(m_value, lang_id); }
+		constexpr std::string_view error_description() const noexcept
+		{ return m_error_description(m_value); }
 
 		constexpr size_t value() const
 		{ return m_value.value; }
 
 	private:
 		value_type m_value{1};
-		std::string_view (*m_error_description)(value_type, std::string_view) noexcept {};
+		std::string_view (*m_error_description)(value_type) noexcept {};
 	};
 }
 
