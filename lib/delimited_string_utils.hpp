@@ -1,7 +1,7 @@
 #ifndef SON_STRINGCONV_HPP
 #define SON_STRINGCONV_HPP
 
-#include <string_view>
+#include <concepts>
 
 /**
  * \defgroup delimstring Delimited strings
