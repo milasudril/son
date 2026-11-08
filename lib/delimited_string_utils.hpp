@@ -76,8 +76,6 @@ namespace son
 		auto const last = src_range.end();
 
 		auto commit = [&](auto status){
-			if(status == delimited_string_decode_result::done)
-			{ ++first; }
 			decoder.set_input_range(src_range_type{first, last});
 			return status;
 		};
