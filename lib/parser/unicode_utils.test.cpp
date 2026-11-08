@@ -110,7 +110,7 @@ TESTCASE(son_unicode_utils_utf16_decoder_corrupt_state)
 		[&decoder]{
 			std::ignore = decoder->try_to_make_codepoint(static_cast<char16_t>(0xD800));
 		},
-		"son internal error: lib/./unicode_utils.hpp:129: Too many elements in UTF-16 codepoint\n",
+		"son internal error: lib/parser/./unicode_utils.hpp:129: Too many elements in UTF-16 codepoint\n",
 		SIGABRT
 	);
 }

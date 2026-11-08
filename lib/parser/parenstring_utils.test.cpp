@@ -622,7 +622,7 @@ TESTCASE(son_parenstring_utils_state_bad)
 		[&]{
 			std::ignore = son::decode_parenstring(decoder);
 		},
-		"son internal error: lib/./parenstring_utils.hpp:364: Unexpected return value from get_state\n",
+		"son internal error: lib/parser/./parenstring_utils.hpp:364: Unexpected return value from get_state\n",
 		SIGABRT
 	);
 }
