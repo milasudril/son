@@ -172,7 +172,7 @@ TESTCASE(son_unicode_utils_encode_as_utf8_four_byte_values)
 	std::string buffer;
 	for(char32_t k = 0x10000; k != 0x110000; ++k)
 	{
-		if((k % 65536) == 0)
+		if((k % 16384) == 0)
 		{
 			expected.clear();
 			buffer.clear();
@@ -195,8 +195,8 @@ TESTCASE(son_unicode_utils_encode_as_utf8_input_out_of_range)
 	{
 		auto const res = son::encode_as_utf8(static_cast<char32_t>(k), buffer);
 		EXPECT_EQ(res, 0);
-		EXPECT_EQ(buffer, expected);
 	}
+	EXPECT_EQ(buffer, expected);
 }
 
 
