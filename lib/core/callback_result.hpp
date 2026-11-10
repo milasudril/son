@@ -1,51 +1,51 @@
 #ifndef SON_CALLBACK_RESULT_HPP
 #define SON_CALLBACK_RESULT_HPP
 
-#include <string_view>
+#include "./int_types.hpp"
+#include "./exception.hpp"
 
 namespace son
 {
 	class callback_result
 	{
 	public:
-		static constexpr size_t operation_completed = 0;
-
-		struct value_type
-		{
-			size_t value;
-			constexpr bool operator==(value_type const&) const = default;
-			constexpr bool operator!=(value_type const&) const = default;
+		enum class status_type:half_uintptr_t{
+			done,
+			more_data_needed,
+			error
 		};
 
 		callback_result() = default;
 
 		template<class Result>
+		requires(
+			std::is_enum_v<Result> &&
+			std::is_same_v<std::underlying_type_t<Result>, half_uintptr_t>
+		)
 		explicit callback_result(Result res):
-			m_value{make_result(std::type_identity<callback_result::value_type>{}, res)},
+			m_status{convert_to(std::type_identity<status_type>{}, res)},
+			m_orig_value{static_cast<half_uintptr_t>(res)},
 			m_error_description{
-				is_error(res)?
-					[](value_type res) noexcept {
-						return to_string_view(make_result(std::type_identity<Result>{}, res));
-					}:
-					nullptr
+				[](half_uintptr_t res) noexcept {
+					return to_string(static_cast<Result>(res));
+				}
 			}
 		{}
 
-		constexpr bool is_done() const
-		{ return m_value == value_type{operation_completed};}
+		constexpr char const* error_description() const noexcept
+		{
+			if(m_error_description == nullptr)
+			{ raise_internal_error("callback_result has no error message"); }
+			return m_error_description(m_orig_value);
+		}
 
-		constexpr bool has_error_condition() const
-		{ return m_error_description != nullptr; }
-
-		constexpr std::string_view error_description() const noexcept
-		{ return m_error_description(m_value); }
-
-		constexpr size_t value() const
-		{ return m_value.value; }
+		constexpr auto status() const
+		{ return m_status; }
 
 	private:
-		value_type m_value{1};
-		std::string_view (*m_error_description)(value_type) noexcept {};
+		status_type m_status{};
+		half_uintptr_t m_orig_value{};
+		char const* (*m_error_description)(half_uintptr_t) noexcept {};
 	};
 }
 

@@ -1,133 +1,70 @@
 //@	{"target":{"name":"callback_result.test"}}
 
 #include "./callback_result.hpp"
+#include "lib/core/int_types.hpp"
 
+#include <csignal>
+#include <testfwk/death_test.hpp>
 #include <testfwk/testfwk.hpp>
 #include <testfwk/mock_util.hpp>
 
 namespace
 {
-	enum class test_result_type{
-		testval
+	enum class test_result_type:son::half_uintptr_t{
+		testval,
+		testval2
 	};
 
-	TestFwk::mock_entry_overload_set<
-		son::callback_result::value_type(
-			std::type_identity<son::callback_result::value_type>,
+	TestFwk::mock_entry<
+		son::callback_result::status_type(
+			std::type_identity<son::callback_result::status_type>,
 			test_result_type
-		),
-		test_result_type(
-			std::type_identity<test_result_type>,
-			son::callback_result::value_type
 		)
-	> make_result_mock;
-
-	son::callback_result::value_type make_result(
-		std::type_identity<son::callback_result::value_type> tag,
+	> convert_to_mock;
+	son::callback_result::status_type convert_to(
+		std::type_identity<son::callback_result::status_type> tag,
 		test_result_type value
 	)
-	{ return make_result_mock(tag, value); }
+	{ return convert_to_mock(tag, value); }
 
-	TestFwk::mock_entry<std::string_view(test_result_type)> to_string_view_mock;
-	std::string_view to_string_view(test_result_type value)
-	{ return to_string_view_mock(value); }
-
-	TestFwk::mock_entry<bool(test_result_type)> is_error_mock;
-	bool is_error(test_result_type type)
-	{ return is_error_mock(type); }
-
-	test_result_type make_result(
-		std::type_identity<test_result_type> tag,
-		son::callback_result::value_type value
-	)
-	{ return make_result_mock(tag, value); }
+	TestFwk::mock_entry<char const*(test_result_type)> to_string_mock;
+	char const* to_string(test_result_type value)
+	{ return to_string_mock(value); }
 }
 
 TESTCASE(son_callback_result_default_state)
 {
 	son::callback_result res;
-	EXPECT_EQ(res.has_error_condition(), false);
-	EXPECT_EQ(res.is_done(), false);
+	EXPECT_EQ(res.status(), son::callback_result::status_type::done);
+	TestFwk::expect_death(
+		[&](){
+			std::ignore = res.error_description();
+		},
+		"son internal error: lib/core/./callback_result.hpp:38: callback_result has no error message\n",
+		SIGABRT
+	);
 }
 
-TESTCASE(son_callback_result_result_not_an_error)
+TESTCASE(son_callback_result_value_set)
 {
-	make_result_mock.expect_call_with_action(
+	convert_to_mock.expect_call_with_action(
 		[](
-			std::type_identity<son::callback_result::value_type> /*unused*/,
+			std::type_identity<son::callback_result::status_type> /*unused*/,
 			test_result_type value
 		){
-			EXPECT_EQ(value, test_result_type::testval);
-			return son::callback_result::value_type{1};
+			EXPECT_EQ(value, test_result_type::testval2);
+			return son::callback_result::status_type::more_data_needed;
 		}
 	);
-	is_error_mock.expect_call_with_action(
-		[](test_result_type value){
-			EXPECT_EQ(value, test_result_type::testval);
-			return false;
-		}
-	);
-	son::callback_result res{test_result_type::testval};
-	EXPECT_EQ(res.has_error_condition(), false);
-}
+	son::callback_result res{test_result_type::testval2};
+	EXPECT_EQ(res.status(), son::callback_result::status_type::more_data_needed);
 
-TESTCASE(son_callback_result_result_is_an_error)
-{
-	make_result_mock.expect_call_with_action(
-		[](
-			std::type_identity<son::callback_result::value_type> /*unused*/,
-			test_result_type value
-		){
-			EXPECT_EQ(value, test_result_type::testval);
-			return son::callback_result::value_type{1};
+	to_string_mock.expect_call_with_action(
+		[](test_result_type result){
+			EXPECT_EQ(result, test_result_type::testval2);
+			return "Foobar";
 		}
 	);
-	is_error_mock.expect_call_with_action(
-		[](test_result_type value){
-			EXPECT_EQ(value, test_result_type::testval);
-			return true;
-		}
-	);
-	son::callback_result res{test_result_type::testval};
-	EXPECT_EQ(res.has_error_condition(), true);
-
-	make_result_mock.expect_call_with_action(
-		[](
-			std::type_identity<test_result_type> /*unused*/,
-		 son::callback_result::value_type val
-		){
-			EXPECT_EQ(val, son::callback_result::value_type{1});
-			return test_result_type::testval;
-		}
-	);
-	to_string_view_mock.expect_call_with_action(
-		[](test_result_type value){
-			EXPECT_EQ(value, test_result_type::testval);
-			return std::string_view{"Test message"};
-		}
-	);
-	auto const msg = res.error_description();
-	EXPECT_EQ(msg, "Test message");
-}
-
-TESTCASE(son_callback_result_result_zero_is_done)
-{
-	make_result_mock.expect_call_with_action(
-		[](
-			std::type_identity<son::callback_result::value_type> /*unused*/,
-			test_result_type value
-		){
-			EXPECT_EQ(value, test_result_type::testval);
-			return son::callback_result::value_type{0};
-		}
-	);
-	is_error_mock.expect_call_with_action(
-		[](test_result_type value){
-			EXPECT_EQ(value, test_result_type::testval);
-			return false;
-		}
-	);
-	son::callback_result res{test_result_type::testval};
-	EXPECT_EQ(res.has_error_condition(), false);
-	EXPECT_EQ(res.is_done(), true);
+	auto const str = res.error_description();
+	EXPECT_EQ(str, std::string_view{"Foobar"});
 }
