@@ -28,7 +28,8 @@ namespace
 	{ return convert_to_mock(tag, value); }
 
 	TestFwk::mock_entry<char const*(test_result_type)> to_string_mock;
-	char const* to_string(test_result_type value)
+	// NOLINTNEXTLINE: Accept crash if exception is not caught
+	char const* to_string(test_result_type value) noexcept
 	{ return to_string_mock(value); }
 }
 
@@ -37,7 +38,7 @@ TESTCASE(son_callback_result_default_state)
 	son::callback_result res;
 	EXPECT_EQ(res.status(), son::callback_result::status_type::done);
 	TestFwk::expect_death(
-		[&](){
+		[&]{
 			std::ignore = res.error_description();
 		},
 		"son internal error: lib/core/./callback_result.hpp:38: callback_result has no error message\n",
