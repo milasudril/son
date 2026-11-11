@@ -11,6 +11,26 @@ namespace son
 		error
 	};
 
+	constexpr auto convert_to(
+		std::type_identity<operation_result_value> /*unused*/,
+		operation_result_value res
+	)
+	{ return res;}
+
+	constexpr const char* to_string(operation_result_value value)
+	{
+		switch(value)
+		{
+			case operation_result_value::done:
+				return "Operation completed";
+			case operation_result_value::suspended:
+				return "Operation suspended";
+			case son::operation_result_value::error:
+			default:
+				return "Unknown error";
+		}
+	}
+
 	class operation_result
 	{
 	public:
