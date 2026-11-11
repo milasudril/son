@@ -1,6 +1,6 @@
-//@	{"target":{"name":"callback_result.test"}}
+//@	{"target":{"name":"operation_result.test"}}
 
-#include "./callback_result.hpp"
+#include "./operation_result.hpp"
 #include "lib/core/int_types.hpp"
 
 #include <csignal>
@@ -16,13 +16,13 @@ namespace
 	};
 
 	TestFwk::mock_entry<
-		son::callback_result::status_type(
-			std::type_identity<son::callback_result::status_type>,
+		son::operation_result_value(
+			std::type_identity<son::operation_result_value>,
 			test_result_type
 		)
 	> convert_to_mock;
-	son::callback_result::status_type convert_to(
-		std::type_identity<son::callback_result::status_type> tag,
+	son::operation_result_value convert_to(
+		std::type_identity<son::operation_result_value> tag,
 		test_result_type value
 	)
 	{ return convert_to_mock(tag, value); }
@@ -33,32 +33,19 @@ namespace
 	{ return to_string_mock(value); }
 }
 
-TESTCASE(son_callback_result_default_state)
-{
-	son::callback_result res;
-	EXPECT_EQ(res.status(), son::callback_result::status_type::done);
-	TestFwk::expect_death(
-		[&]{
-			std::ignore = res.error_description();
-		},
-		"son internal error: lib/core/./callback_result.hpp:38: callback_result has no error message\n",
-		SIGABRT
-	);
-}
-
-TESTCASE(son_callback_result_value_set)
+TESTCASE(son_operation_result_value_set)
 {
 	convert_to_mock.expect_call_with_action(
 		[](
-			std::type_identity<son::callback_result::status_type> /*unused*/,
+			std::type_identity<son::operation_result_value> /*unused*/,
 			test_result_type value
 		){
 			EXPECT_EQ(value, test_result_type::testval2);
-			return son::callback_result::status_type::more_data_needed;
+			return son::operation_result_value::suspended;
 		}
 	);
-	son::callback_result res{test_result_type::testval2};
-	EXPECT_EQ(res.status(), son::callback_result::status_type::more_data_needed);
+	son::operation_result res{test_result_type::testval2};
+	EXPECT_EQ(res.status(), son::operation_result_value::suspended);
 
 	to_string_mock.expect_call_with_action(
 		[](test_result_type result){
