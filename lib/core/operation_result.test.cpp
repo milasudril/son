@@ -36,17 +36,25 @@ TESTCASE(son_operation_result_value_convert_to_operation_result_value)
 	{
 		auto const res = convert_to(
 			std::type_identity<son::operation_result_value>{},
-			son::operation_result_value::done
+			son::operation_result_value::keep_going
 		);
-		EXPECT_EQ(res, son::operation_result_value::done);
+		EXPECT_EQ(res, son::operation_result_value::keep_going);
 	}
 
 	{
 		auto const res = convert_to(
 			std::type_identity<son::operation_result_value>{},
-			son::operation_result_value::suspended
+			son::operation_result_value::more_data_needed
 		);
-		EXPECT_EQ(res, son::operation_result_value::suspended);
+		EXPECT_EQ(res, son::operation_result_value::more_data_needed);
+	}
+
+	{
+		auto const res = convert_to(
+			std::type_identity<son::operation_result_value>{},
+			son::operation_result_value::completed
+		);
+		EXPECT_EQ(res, son::operation_result_value::completed);
 	}
 
 	{
@@ -61,13 +69,18 @@ TESTCASE(son_operation_result_value_convert_to_operation_result_value)
 TESTCASE(son_operation_result_value_to_string)
 {
 	{
-		auto const res = to_string(son::operation_result_value::done);
-		EXPECT_EQ(res, std::string_view{"Operation completed"});
+		auto const res = to_string(son::operation_result_value::keep_going);
+		EXPECT_EQ(res, std::string_view{"Keep going"});
 	}
 
 	{
-		auto const res = to_string(son::operation_result_value::suspended);
-		EXPECT_EQ(res, std::string_view{"Operation suspended"});
+		auto const res = to_string(son::operation_result_value::more_data_needed);
+		EXPECT_EQ(res, std::string_view{"More data needed"});
+	}
+
+	{
+		auto const res = to_string(son::operation_result_value::completed);
+		EXPECT_EQ(res, std::string_view{"Operation completed"});
 	}
 
 	{
@@ -79,17 +92,24 @@ TESTCASE(son_operation_result_value_to_string)
 TESTCASE(son_operation_result_value_wrapped_in_operation_result)
 {
 	{
-		son::operation_result res{son::operation_result_value::done};
+		son::operation_result res{son::operation_result_value::keep_going};
 		auto const msg = res.error_description();
-		EXPECT_EQ(msg, std::string_view{"Operation completed"});
-		EXPECT_EQ(res.status(), son::operation_result_value::done);
+		EXPECT_EQ(msg, std::string_view{"Keep going"});
+		EXPECT_EQ(res.status(), son::operation_result_value::keep_going);
 	}
 
 	{
-		son::operation_result res{son::operation_result_value::suspended};
+		son::operation_result res{son::operation_result_value::more_data_needed};
 		auto const msg = res.error_description();
-		EXPECT_EQ(msg, std::string_view{"Operation suspended"});
-		EXPECT_EQ(res.status(), son::operation_result_value::suspended);
+		EXPECT_EQ(msg, std::string_view{"More data needed"});
+		EXPECT_EQ(res.status(), son::operation_result_value::more_data_needed);
+	}
+
+	{
+		son::operation_result res{son::operation_result_value::completed};
+		auto const msg = res.error_description();
+		EXPECT_EQ(msg, std::string_view{"Operation completed"});
+		EXPECT_EQ(res.status(), son::operation_result_value::completed);
 	}
 
 	{
@@ -108,11 +128,11 @@ TESTCASE(son_operation_result_value_set)
 			test_result_type value
 		){
 			EXPECT_EQ(value, test_result_type::testval2);
-			return son::operation_result_value::suspended;
+			return son::operation_result_value::more_data_needed;
 		}
 	);
 	son::operation_result res{test_result_type::testval2};
-	EXPECT_EQ(res.status(), son::operation_result_value::suspended);
+	EXPECT_EQ(res.status(), son::operation_result_value::more_data_needed);
 
 	to_string_mock.expect_call_with_action(
 		[](test_result_type result){
