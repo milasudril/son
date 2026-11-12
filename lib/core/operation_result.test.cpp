@@ -3,8 +3,6 @@
 #include "./operation_result.hpp"
 #include "lib/core/int_types.hpp"
 
-#include <csignal>
-#include <testfwk/death_test.hpp>
 #include <testfwk/testfwk.hpp>
 #include <testfwk/mock_util.hpp>
 
@@ -31,6 +29,75 @@ namespace
 	// NOLINTNEXTLINE: Accept crash if exception is not caught
 	char const* to_string(test_result_type value) noexcept
 	{ return to_string_mock(value); }
+}
+
+TESTCASE(son_operation_result_value_convert_to_operation_result_value)
+{
+	{
+		auto const res = convert_to(
+			std::type_identity<son::operation_result_value>{},
+			son::operation_result_value::done
+		);
+		EXPECT_EQ(res, son::operation_result_value::done);
+	}
+
+	{
+		auto const res = convert_to(
+			std::type_identity<son::operation_result_value>{},
+			son::operation_result_value::suspended
+		);
+		EXPECT_EQ(res, son::operation_result_value::suspended);
+	}
+
+	{
+		auto const res = convert_to(
+			std::type_identity<son::operation_result_value>{},
+			son::operation_result_value::error
+		);
+		EXPECT_EQ(res, son::operation_result_value::error);
+	}
+}
+
+TESTCASE(son_operation_result_value_to_string)
+{
+	{
+		auto const res = to_string(son::operation_result_value::done);
+		EXPECT_EQ(res, std::string_view{"Operation completed"});
+	}
+
+	{
+		auto const res = to_string(son::operation_result_value::suspended);
+		EXPECT_EQ(res, std::string_view{"Operation suspended"});
+	}
+
+	{
+		auto const res = to_string(son::operation_result_value::error);
+		EXPECT_EQ(res, std::string_view{"Unknown error"});
+	}
+}
+
+TESTCASE(son_operation_result_value_wrapped_in_operation_result)
+{
+	{
+		son::operation_result res{son::operation_result_value::done};
+		auto const msg = res.error_description();
+		EXPECT_EQ(msg, std::string_view{"Operation completed"});
+		EXPECT_EQ(res.status(), son::operation_result_value::done);
+	}
+
+	{
+		son::operation_result res{son::operation_result_value::suspended};
+		auto const msg = res.error_description();
+		EXPECT_EQ(msg, std::string_view{"Operation suspended"});
+		EXPECT_EQ(res.status(), son::operation_result_value::suspended);
+	}
+
+	{
+		son::operation_result res{son::operation_result_value::error};
+		auto const msg = res.error_description();
+		EXPECT_EQ(msg, std::string_view{"Unknown error"});
+		EXPECT_EQ(res.status(), son::operation_result_value::error);
+	}
 }
 
 TESTCASE(son_operation_result_value_set)
