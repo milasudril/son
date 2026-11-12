@@ -9,9 +9,20 @@ namespace son
 	 * @brief Represents the fundamental status values of an operation.
 	 */
 	enum class operation_result_value : half_uintptr_t {
-		done,	   ///< Operation completed successfully.
-		suspended,  ///< Operation is currently suspended.
-		error	   ///< Operation encountered an error.
+		/**
+		 * \brief Operation completed successfully
+		 */
+		done,
+
+		/**
+		 * \brief Operation is currently suspended
+		 */
+		suspended,
+
+		/**
+		 * \brief Operation encountered an error
+		 */
+		error
 	};
 
 	/**
@@ -92,9 +103,9 @@ namespace son
 		{ return m_status; }
 
 	private:
-		operation_result_value m_status{}; ///< Normalized operation status.
-		half_uintptr_t m_orig_value{};	 ///< Original underlying value of the result.
-		char const* (*m_error_description)(half_uintptr_t) noexcept {}; ///< Function pointer for dynamic error description lookup.
+		operation_result_value m_status{};
+		half_uintptr_t m_orig_value{};
+		char const* (*m_error_description)(half_uintptr_t) noexcept {};
 	};
 }
 
