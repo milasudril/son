@@ -36,14 +36,6 @@ TESTCASE(son_operation_result_value_convert_to_operation_result_value)
 	{
 		auto const res = convert_to(
 			std::type_identity<son::operation_result_value>{},
-			son::operation_result_value::keep_going
-		);
-		EXPECT_EQ(res, son::operation_result_value::keep_going);
-	}
-
-	{
-		auto const res = convert_to(
-			std::type_identity<son::operation_result_value>{},
 			son::operation_result_value::more_data_needed
 		);
 		EXPECT_EQ(res, son::operation_result_value::more_data_needed);
@@ -69,11 +61,6 @@ TESTCASE(son_operation_result_value_convert_to_operation_result_value)
 TESTCASE(son_operation_result_value_to_string)
 {
 	{
-		auto const res = to_string(son::operation_result_value::keep_going);
-		EXPECT_EQ(res, std::string_view{"Keep going"});
-	}
-
-	{
 		auto const res = to_string(son::operation_result_value::more_data_needed);
 		EXPECT_EQ(res, std::string_view{"More data needed"});
 	}
@@ -91,13 +78,6 @@ TESTCASE(son_operation_result_value_to_string)
 
 TESTCASE(son_operation_result_value_wrapped_in_operation_result)
 {
-	{
-		son::operation_result res{son::operation_result_value::keep_going};
-		auto const msg = res.error_description();
-		EXPECT_EQ(msg, std::string_view{"Keep going"});
-		EXPECT_EQ(res.status(), son::operation_result_value::keep_going);
-	}
-
 	{
 		son::operation_result res{son::operation_result_value::more_data_needed};
 		auto const msg = res.error_description();

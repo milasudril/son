@@ -10,19 +10,15 @@ namespace son
 	 */
 	enum class operation_result_value : half_uintptr_t {
 		/**
-		 * \brief Tells the control loop to keep calling the stepping function
+		 * \brief Tells the control loop that the stepping function has completed its tasks
 		 */
-		keep_going,
+		completed,
+
 
 		/**
 		 * \brief Tells the control loop that the stepping function needs more data to continue
 		 */
 		more_data_needed,
-
-		/**
-		 * \brief Tells the control loop that the stepping function has completed its tasks
-		 */
-		completed,
 
 		/**
 		 * \brief Tells the control loop that an error has occured
@@ -53,8 +49,6 @@ namespace son
 	{
 		switch(value)
 		{
-			case operation_result_value::keep_going:
-				return "Keep going";
 			case operation_result_value::more_data_needed:
 				return "More data needed";
 			case son::operation_result_value::completed:
