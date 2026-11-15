@@ -1,6 +1,9 @@
 #ifndef SON_STRINGCONV_HPP
 #define SON_STRINGCONV_HPP
 
+#include "lib/core/int_types.hpp"
+#include "lib/core/operation_result.hpp"
+
 #include <concepts>
 
 /**
@@ -14,7 +17,7 @@ namespace son
 	 * \brief The result of a skip_chars operation
 	 * \ingroup delimstring
 	 */
-	enum class skip_chars_result
+	enum class skip_chars_result:half_uintptr_t
 	{
 		/**
 		 * \brief The operation was completed without errors
@@ -26,6 +29,26 @@ namespace son
 		 */
 		more_data_needed
 	};
+
+	constexpr char const* to_string(skip_chars_result /*unused*/)
+	{ return nullptr; }
+
+
+	constexpr auto  convert_to(
+		std::type_identity<operation_result_value> /*unused*/,
+		skip_chars_result res
+	)
+	{
+		switch(res)
+		{
+			case skip_chars_result::done:
+				return operation_result_value::completed;
+			case skip_chars_result::more_data_needed:
+				return operation_result_value::more_data_needed;
+			default:
+				return operation_result_value::error;
+		}
+	}
 
 	/**
 	 * \brief Requirements on a class that can manage the state during the decoding of a string
