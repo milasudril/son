@@ -82,11 +82,22 @@ TESTCASE(son_run_lexer_process_until_current_token_completed)
 	my_lexer.process_current_token.expect_call_with_action(
 		[] {
 			return son::operation_result{dummy_result::done};
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(2)
 		}
 	);
 	my_lexer.begin_next_token.expect_call_with_action(
-		[]{
-			return son::operation_result{dummy_result::done};
+		[callcount = 0] mutable {
+			if(callcount == 0)
+			{
+				++callcount;
+				return std::optional<son::operation_result>{};
+			}
+			return std::optional{son::operation_result{dummy_result::done}};
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(2)
 		}
 	);
 	auto const res = son::run_lexer(my_lexer);
