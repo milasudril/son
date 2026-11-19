@@ -2,6 +2,7 @@
 #define SON_COMMON_TRAITS_HPP
 
 #include <type_traits>
+#include <utility>
 
 /**
  * \defgroup typetraits Common type traits
@@ -21,6 +22,9 @@ namespace son
 			[]<class... Args>(const C<Args...>&) {}(std::declval<T>());
 		};
 	}
+
+	template<class T, template<class...> class C>
+	concept instantiation_of = is_instantiation_of<T, C>();
 
 	/**
 	 * \brief Adds the constness of `Source` to `Target`
@@ -110,6 +114,12 @@ namespace son
 		else
 		{ return false;}
 	}
+
+	template <class From, class To>
+	concept explicitly_convertible_to = requires(From&& f)
+	{
+    static_cast<To>(std::forward<From>(f));
+	};
 }
 
 #endif

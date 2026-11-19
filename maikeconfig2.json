@@ -39,7 +39,8 @@
                             "-Wno-maybe-uninitialized",
                             "-Wswitch-enum",
                             "-Wno-error=maybe-uninitialized",
-                            "-ftemplate-backtrace-limit=0"
+                            "-ftemplate-backtrace-limit=0",
+                            "-fconcepts-diagnostics-depth=8"
                         ],
                         "iquote": [
                           "."
@@ -68,7 +69,8 @@
                             "-Wno-maybe-uninitialized",
                             "-Wno-error=maybe-uninitialized",
                             "-Wswitch-enum",
-                            "-ftemplate-backtrace-limit=0"
+                            "-ftemplate-backtrace-limit=0",
+                            "-fconcepts-diagnostics-depth=8"
                         ],
                         "iquote": [
                           "."

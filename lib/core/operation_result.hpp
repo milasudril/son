@@ -14,11 +14,15 @@ namespace son
 		 */
 		completed,
 
-
 		/**
 		 * \brief Tells the control loop that the stepping function needs more data to continue
 		 */
 		more_data_needed,
+
+		/**
+		 * \brief Tells the control loop to stop (and discard any results)
+		 */
+		aborted,
 
 		/**
 		 * \brief Tells the control loop that an error has occured
@@ -49,10 +53,12 @@ namespace son
 	{
 		switch(value)
 		{
-			case operation_result_value::more_data_needed:
-				return "More data needed";
 			case son::operation_result_value::completed:
 				return "Operation completed";
+			case son::operation_result_value::aborted:
+				return "Operation aborted";
+			case operation_result_value::more_data_needed:
+				return "More data needed";
 			case son::operation_result_value::error:
 			default:
 				return "Unknown error";

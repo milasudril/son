@@ -76,8 +76,8 @@ namespace son
 		static constexpr bool skip_char(char ch_in)
 		{ return ch_in >= 0 && ch_in <= ' '; }
 
-		static constexpr operation_result do_charskip(lexer& lexer_state)
-		{ return operation_result{skip_chars(lexer_state)}; }
+		static constexpr operation_result do_charskip(lexer& /*unused*/)
+		{ return operation_result{operation_result_value::completed}; }
 
 	private:
 		using token_decoder = operation_result (*)(lexer&);
