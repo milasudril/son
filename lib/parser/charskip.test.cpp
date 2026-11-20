@@ -140,3 +140,43 @@ TESTCASE(son_charskip_input_range_points_to_first_nonskipped_char)
 	auto const result = son::skip_chars(decoder);
 	EXPECT_EQ(result.status(), son::operation_result_value::completed);
 }
+
+TESTCASE(son_charskip_update_stream_state_aborts)
+{
+	test_string_decoder decoder;
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return std::string_view{"    Foobar"};
+		}
+	);
+	decoder.update_stream_state.expect_call_with_action(
+		[callcount = 0](char ch_in) mutable {
+			if(callcount < 4)
+			{
+				EXPECT_EQ(ch_in, ' ');
+				++callcount;
+				return std::optional<update_stream_state_result>{};
+			}
+			EXPECT_EQ(ch_in, 'F');
+			return std::optional<update_stream_state_result>{update_stream_state_result::aborted};
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(5)
+		}
+	);
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view str){
+			EXPECT_EQ(str, "oobar");
+		}
+	);
+	decoder.skip_char.expect_call_with_action(
+		[](char ch_in){
+			return ch_in == ' ';
+		},
+		TestFwk::expectation_options{
+			.cardinality = TestFwk::cardinality_constraint::exactly(4)
+		}
+	);
+	auto const result = son::skip_chars(decoder);
+	EXPECT_EQ(result.status(), son::operation_result_value::aborted);
+}
