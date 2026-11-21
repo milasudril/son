@@ -154,3 +154,31 @@ TESTCASE(son_delimited_string_utils_char_not_accepted)
 	auto const result = son::decode_delimited_string(decoder);
 	EXPECT_EQ(result.error_description(), std::string_view{"Illegal char in string"});
 }
+
+TESTCASE(son_delimited_string_utils_stream_state_with_value)
+{
+	test_string_decoder decoder;
+	static constexpr std::string_view input_range{"Foobar.More data"};
+	decoder.get_input_range.expect_call_with_action(
+		[]{
+			return input_range;
+		}
+	);
+
+	decoder.update_stream_state.expect_call_with_action(
+		[ptr = input_range.data()](char ch_in) mutable {
+			EXPECT_EQ(ch_in, *ptr);
+			++ptr;
+			return update_stream_state_result::aborted;
+		}
+	);
+
+	decoder.set_input_range.expect_call_with_action(
+		[](std::string_view str){
+			EXPECT_EQ(str, "oobar.More data");
+		}
+	);
+
+	auto const result = son::decode_delimited_string(decoder);
+	EXPECT_EQ(result.error_description(), std::string_view{"Aborted"});
+}
