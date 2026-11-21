@@ -87,6 +87,7 @@ namespace son
 			m_status{convert_to(std::type_identity<operation_result_value>{}, res)},
 			m_orig_value{static_cast<half_uintptr_t>(res)},
 			m_error_description{
+				// NOLINTNEXTLINE: Accept std::terminate in case function throws
 				[](half_uintptr_t res) noexcept {
 					return to_string(static_cast<Result>(res));
 				}
